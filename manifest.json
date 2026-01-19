@@ -3,7 +3,7 @@
   "name": "Twitch Clip Todo",
   "version": "0.1.0",
   "description": "Bookmark moments during Twitch streams for later clip creation",
-  "permissions": ["tabs", "storage", "activeTab", "sidePanel"],
+  "permissions": ["tabs", "storage", "activeTab", "sidePanel", "alarms"],
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"
@@ -24,5 +24,8 @@
       },
       "description": "Record current moment"
     }
+  },
+  "action": {
+    "default_title": "Twitch Clip Todo"
   }
 }
