@@ -1,6 +1,7 @@
 import { crx } from "@crxjs/vite-plugin";
 import { defineConfig } from "vite";
 import solid from "vite-plugin-solid";
+import path from "node:path";
 import manifest from "./manifest.json";
 
 export default defineConfig({
@@ -13,6 +14,11 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   build: {
     outDir: "dist",
     rollupOptions: {
