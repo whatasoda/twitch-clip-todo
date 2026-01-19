@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Twitch Clip Todo",
+  "version": "0.1.0",
+  "description": "Bookmark moments during Twitch streams for later clip creation",
+  "permissions": ["tabs", "storage", "activeTab", "sidePanel"],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.twitch.tv/*", "https://twitch.tv/*"],
+      "js": ["src/content/index.ts"]
+    }
+  ],
+  "commands": {
+    "record-moment": {
+      "suggested_key": {
+        "default": "Alt+Shift+C"
+      },
+      "description": "Record current moment"
+    }
+  }
+}
