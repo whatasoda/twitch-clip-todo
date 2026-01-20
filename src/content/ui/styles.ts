@@ -1,5 +1,6 @@
 // Inline styles for content script UI (Shadow DOM)
 export const styles = {
+  // Legacy button style (keeping for reference)
   button: {
     base: `
       display: flex;
@@ -17,6 +18,44 @@ export const styles = {
     `,
     hover: `background: #772ce8;`,
     active: `transform: scale(0.95);`,
+  },
+  // Twitch-native player button style
+  playerButton: {
+    base: `
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      padding: 0 10px;
+      border: none;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      font-size: 13px;
+      font-weight: 600;
+      gap: 5px;
+      font-family: inherit;
+    `,
+    hover: `background: rgba(255, 255, 255, 0.25);`,
+  },
+  // Chat panel button style
+  chatButton: {
+    base: `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: #efeff1;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    `,
+    hover: `background: rgba(255, 255, 255, 0.15);`,
   },
   memoInput: {
     container: `
