@@ -39,24 +39,82 @@ export function getPlayerTimestamp(): number | null {
 }
 
 export function getStreamerNameFromPage(): string | null {
-  // Try to get from the URL first (most reliable)
+  // Try to get from the URL first (most reliable for live streams)
   const match = window.location.pathname.match(/^\/([a-zA-Z0-9_]+)/);
   if (match?.[1]) {
     // Exclude known non-streamer paths
-    const excluded = ["videos", "directory", "downloads", "jobs", "settings"];
+    const excluded = [
+      "videos",
+      "directory",
+      "downloads",
+      "jobs",
+      "settings",
+      "moderator",
+      "popout",
+    ];
     if (!excluded.includes(match[1].toLowerCase())) {
       return match[1];
     }
   }
 
-  // For VOD pages, try to get from the channel link
-  const channelLink = document.querySelector('a[data-a-target="video-owner-link"]');
-  if (channelLink) {
-    const href = channelLink.getAttribute("href");
+  // Multiple selectors to try for finding the channel name
+  const selectors = [
+    // VOD page - video owner link
+    'a[data-a-target="video-owner-link"]',
+    // VOD page - channel link in video info
+    'a[data-a-target="user-channel-header-item"]',
+    // Channel header
+    '[data-a-target="stream-title"]',
+    // Channel name in the header
+    "h1.tw-title",
+    // Another common location
+    'a[data-test-selector="user-avatar-image"]',
+  ];
+
+  for (const selector of selectors) {
+    const element = document.querySelector(selector);
+    if (element) {
+      // Try href first (for links)
+      const href = element.getAttribute("href");
+      if (href) {
+        const hrefMatch = href.match(/^\/([a-zA-Z0-9_]+)/);
+        if (hrefMatch?.[1] && !["videos", "directory"].includes(hrefMatch[1].toLowerCase())) {
+          return hrefMatch[1];
+        }
+      }
+      // Try text content
+      const text = element.textContent?.trim();
+      if (text && /^[a-zA-Z0-9_]+$/.test(text)) {
+        return text;
+      }
+    }
+  }
+
+  // Last resort: look for any link that looks like a channel link
+  const channelLinks = document.querySelectorAll('a[href^="/"]');
+  for (const link of channelLinks) {
+    const href = link.getAttribute("href");
     if (href) {
-      const vodMatch = href.match(/^\/([a-zA-Z0-9_]+)/);
-      if (vodMatch?.[1]) {
-        return vodMatch[1];
+      const linkMatch = href.match(/^\/([a-zA-Z0-9_]{3,25})$/);
+      if (linkMatch?.[1]) {
+        const excluded = [
+          "videos",
+          "directory",
+          "downloads",
+          "jobs",
+          "settings",
+          "search",
+          "following",
+        ];
+        if (!excluded.includes(linkMatch[1].toLowerCase())) {
+          // Check if this link is in a context that suggests it's a channel
+          const parent = link.closest(
+            '[class*="channel"], [class*="video-info"], [class*="stream-info"]',
+          );
+          if (parent) {
+            return linkMatch[1];
+          }
+        }
       }
     }
   }
