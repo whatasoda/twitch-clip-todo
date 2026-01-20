@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "twitch-clip-todo",
+      "name": "twitch-clips-todo",
       "dependencies": {
         "@ark-ui/solid": "^5.30.0",
         "lucide-solid": "^0.562.0",
