@@ -1,6 +1,14 @@
 import type { PageInfo } from "../core/twitch";
 import { getCurrentPageInfo, setupNavigationListener } from "./detector";
-import { createRecord, getPendingCount, linkVod, openSidePanel, updateMemo } from "./messaging";
+import {
+  createRecord,
+  getPendingCount,
+  getStreamerInfo,
+  getVodMetadataFromApi,
+  linkVod,
+  openSidePanel,
+  updateMemo,
+} from "./messaging";
 import { getPlayerTimestamp, getStreamerNameFromPage, getVodMetadata } from "./player";
 import {
   hideIndicator,
@@ -27,7 +35,26 @@ async function handleRecord(): Promise<void> {
     return;
   }
 
-  const streamerName = getStreamerNameFromPage();
+  // Try to get streamer name from API first, then fallback to DOM
+  let streamerName: string | null = null;
+  const loginFromUrl = pageInfo.streamerId;
+
+  if (loginFromUrl) {
+    try {
+      const apiInfo = await getStreamerInfo(loginFromUrl);
+      if (apiInfo) {
+        streamerName = apiInfo.displayName;
+      }
+    } catch {
+      // API failed, will use DOM fallback
+    }
+  }
+
+  // DOM fallback
+  if (!streamerName) {
+    streamerName = getStreamerNameFromPage();
+  }
+
   if (!streamerName) {
     showToast("Could not get streamer name", "error");
     return;
@@ -35,7 +62,7 @@ async function handleRecord(): Promise<void> {
 
   try {
     const record = await createRecord({
-      streamerId: pageInfo.streamerId ?? streamerName.toLowerCase(),
+      streamerId: loginFromUrl ?? streamerName.toLowerCase(),
       streamerName,
       timestampSeconds: timestamp,
       sourceType: pageInfo.type as "live" | "vod",
@@ -107,22 +134,44 @@ async function handlePageChange(pageInfo: PageInfo): Promise<void> {
     }
 
     // Auto-link VODs
-    if (pageInfo.type === "vod") {
-      const vodMeta = getVodMetadata();
-      if (vodMeta?.streamerId) {
-        try {
+    if (pageInfo.type === "vod" && pageInfo.vodId) {
+      try {
+        // Try to get VOD metadata from API first
+        let vodId = pageInfo.vodId;
+        let streamerId: string | null = null;
+        let startedAt: string | null = null;
+        let durationSeconds: number | null = null;
+
+        const apiVodMeta = await getVodMetadataFromApi(pageInfo.vodId);
+        if (apiVodMeta) {
+          vodId = apiVodMeta.vodId;
+          streamerId = apiVodMeta.streamerId;
+          startedAt = apiVodMeta.startedAt.toISOString();
+          durationSeconds = apiVodMeta.durationSeconds;
+        } else {
+          // Fallback to DOM extraction
+          const domVodMeta = getVodMetadata();
+          if (domVodMeta) {
+            vodId = domVodMeta.vodId;
+            streamerId = domVodMeta.streamerId;
+            startedAt = domVodMeta.startedAt;
+            durationSeconds = domVodMeta.durationSeconds;
+          }
+        }
+
+        if (streamerId) {
           const linked = await linkVod({
-            vodId: vodMeta.vodId,
-            streamerId: vodMeta.streamerId,
-            startedAt: vodMeta.startedAt ?? new Date().toISOString(),
-            durationSeconds: vodMeta.durationSeconds ?? 0,
+            vodId,
+            streamerId,
+            startedAt: startedAt ?? new Date().toISOString(),
+            durationSeconds: durationSeconds ?? 0,
           });
           if (linked.length > 0) {
             showToast(`Linked ${linked.length} record(s) to this VOD`, "info");
           }
-        } catch (error) {
-          console.error("[Twitch Clip Todo] VOD linking failed:", error);
         }
+      } catch (error) {
+        console.error("[Twitch Clip Todo] VOD linking failed:", error);
       }
     }
   } else if (pageInfo.type === "channel" && pageInfo.streamerId) {

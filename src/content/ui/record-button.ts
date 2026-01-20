@@ -4,7 +4,7 @@ let buttonElement: HTMLElement | null = null;
 
 export function createRecordButton(onClick: () => void): HTMLElement {
   const host = document.createElement("div");
-  host.id = "twitch-clip-todo-button";
+  host.id = "twitch-clips-todo-button";
   const shadowRoot = host.attachShadow({ mode: "closed" });
 
   const button = document.createElement("button");

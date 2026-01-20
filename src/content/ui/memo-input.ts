@@ -6,7 +6,7 @@ export function showMemoInput(onSave: (memo: string) => void, onCancel: () => vo
   if (containerElement) return;
 
   const host = document.createElement("div");
-  host.id = "twitch-clip-todo-memo";
+  host.id = "twitch-clips-todo-memo";
   const shadowRoot = host.attachShadow({ mode: "closed" });
 
   const container = document.createElement("div");

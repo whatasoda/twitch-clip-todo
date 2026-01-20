@@ -1,4 +1,5 @@
 import type { Record } from "../core/record";
+import type { StreamerInfo, VodMetadata } from "../services/twitch.service";
 import type {
   CreateRecordPayload,
   LinkVodPayload,
@@ -14,6 +15,16 @@ async function sendMessage<T>(message: MessageToBackground): Promise<T> {
     throw new Error(response.error);
   }
   return response.data;
+}
+
+// Twitch API messaging functions
+
+export async function getStreamerInfo(login: string): Promise<StreamerInfo | null> {
+  return sendMessage<StreamerInfo | null>({ type: "TWITCH_GET_STREAMER_INFO", payload: { login } });
+}
+
+export async function getVodMetadataFromApi(vodId: string): Promise<VodMetadata | null> {
+  return sendMessage<VodMetadata | null>({ type: "TWITCH_GET_VOD_METADATA", payload: { vodId } });
 }
 
 export async function createRecord(payload: CreateRecordPayload): Promise<Record> {

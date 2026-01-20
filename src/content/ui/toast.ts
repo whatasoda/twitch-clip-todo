@@ -4,14 +4,14 @@ let toastTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export function showToast(message: string, type: "success" | "error" | "info" = "info"): void {
   // Remove existing toast
-  const existing = document.getElementById("twitch-clip-todo-toast");
+  const existing = document.getElementById("twitch-clips-todo-toast");
   existing?.remove();
   if (toastTimeout) {
     clearTimeout(toastTimeout);
   }
 
   const host = document.createElement("div");
-  host.id = "twitch-clip-todo-toast";
+  host.id = "twitch-clips-todo-toast";
   const shadowRoot = host.attachShadow({ mode: "closed" });
 
   // Add animation keyframes

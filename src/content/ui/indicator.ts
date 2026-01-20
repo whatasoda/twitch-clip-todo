@@ -10,7 +10,7 @@ export function showIndicator(count: number, onClick: () => void): void {
   }
 
   const host = document.createElement("div");
-  host.id = "twitch-clip-todo-indicator";
+  host.id = "twitch-clips-todo-indicator";
   shadowRoot = host.attachShadow({ mode: "closed" });
 
   const container = document.createElement("div");
