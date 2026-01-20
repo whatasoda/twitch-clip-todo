@@ -23,6 +23,7 @@ describe("LinkingService", () => {
       timestampSeconds: 0,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     // Manually update recordedAt to be within VOD timeframe
@@ -55,6 +56,7 @@ describe("LinkingService", () => {
       timestampSeconds: 0,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     const vodPayload = {
@@ -75,6 +77,7 @@ describe("LinkingService", () => {
       timestampSeconds: 0,
       sourceType: "vod",
       vodId: "existing_vod",
+      broadcastId: null,
     });
 
     const vodPayload = {

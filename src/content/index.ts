@@ -32,16 +32,20 @@ async function handleRecord(): Promise<void> {
 
   const loginFromUrl = pageInfo.streamerId;
 
-  // Get timestamp - different strategies for live vs VOD
+  // Get timestamp and broadcastId - different strategies for live vs VOD
   let timestamp: number | null = null;
+  let broadcastId: string | null = null;
 
   if (pageInfo.type === "live" && loginFromUrl) {
-    // Live: Calculate elapsed time from API's started_at
+    // Live: Calculate elapsed time from API's started_at and capture broadcastId
     try {
       const streamInfo = await getCurrentStream(loginFromUrl);
-      if (streamInfo?.startedAt) {
-        const elapsedMs = Date.now() - new Date(streamInfo.startedAt).getTime();
-        timestamp = Math.floor(elapsedMs / 1000);
+      if (streamInfo) {
+        broadcastId = streamInfo.streamId;
+        if (streamInfo.startedAt) {
+          const elapsedMs = Date.now() - new Date(streamInfo.startedAt).getTime();
+          timestamp = Math.floor(elapsedMs / 1000);
+        }
       }
     } catch {
       // API failed, will try DOM fallback
@@ -89,6 +93,7 @@ async function handleRecord(): Promise<void> {
       timestampSeconds: timestamp,
       sourceType: pageInfo.type as "live" | "vod",
       vodId: pageInfo.vodId,
+      broadcastId,
     });
 
     pendingRecordId = record.id;

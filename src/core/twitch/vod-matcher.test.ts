@@ -18,6 +18,7 @@ describe("matchRecordToVod", () => {
         timestampSeconds: 3600,
         sourceType: "live" as const,
         vodId: null,
+        broadcastId: null,
       }),
       recordedAt: "2024-01-01T11:00:00Z",
     };
@@ -33,6 +34,7 @@ describe("matchRecordToVod", () => {
         timestampSeconds: 3600,
         sourceType: "live" as const,
         vodId: null,
+        broadcastId: null,
       }),
       recordedAt: "2024-01-01T15:00:00Z",
     };
@@ -48,6 +50,7 @@ describe("matchRecordToVod", () => {
         timestampSeconds: 3600,
         sourceType: "live" as const,
         vodId: null,
+        broadcastId: null,
       }),
       recordedAt: "2024-01-01T11:00:00Z",
     };
@@ -63,6 +66,7 @@ describe("matchRecordToVod", () => {
         timestampSeconds: 3600,
         sourceType: "vod" as const,
         vodId: "456",
+        broadcastId: null,
       }),
       recordedAt: "2024-01-01T11:00:00Z",
     };
@@ -80,6 +84,7 @@ describe("calculateVodOffset", () => {
         timestampSeconds: 0,
         sourceType: "live" as const,
         vodId: null,
+        broadcastId: null,
       }),
       recordedAt: "2024-01-01T11:30:00Z",
     };
@@ -96,6 +101,7 @@ describe("calculateVodOffset", () => {
         timestampSeconds: 0,
         sourceType: "live" as const,
         vodId: null,
+        broadcastId: null,
       }),
       recordedAt: "2024-01-01T09:00:00Z",
     };
@@ -122,6 +128,7 @@ describe("linkRecordsToVod", () => {
           timestampSeconds: 0,
           sourceType: "live" as const,
           vodId: null,
+          broadcastId: null,
         }),
         recordedAt: "2024-01-01T11:00:00Z",
       },
@@ -132,6 +139,7 @@ describe("linkRecordsToVod", () => {
           timestampSeconds: 0,
           sourceType: "live" as const,
           vodId: null,
+          broadcastId: null,
         }),
         recordedAt: "2024-01-01T11:30:00Z",
       },
@@ -142,6 +150,7 @@ describe("linkRecordsToVod", () => {
           timestampSeconds: 0,
           sourceType: "live" as const,
           vodId: null,
+          broadcastId: null,
         }),
         recordedAt: "2024-01-01T11:00:00Z",
       },

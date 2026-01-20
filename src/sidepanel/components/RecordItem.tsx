@@ -51,7 +51,7 @@ export function RecordItem(props: RecordItemProps) {
   };
 
   const isCompleted = () => props.record.completedAt !== null;
-  const isLinked = () => props.record.vodId !== null;
+  const canCreateClip = () => props.record.vodId !== null || props.record.broadcastId !== null;
 
   return (
     <Box
@@ -67,7 +67,7 @@ export function RecordItem(props: RecordItemProps) {
           {formatTimestamp(props.record.timestampSeconds)}
         </Box>
         <HStack gap="1">
-          <Show when={isLinked()}>
+          <Show when={canCreateClip()}>
             <Button
               size="xs"
               variant={isCompleted() ? "outline" : "solid"}
@@ -86,7 +86,7 @@ export function RecordItem(props: RecordItemProps) {
               </Show>
             </Button>
           </Show>
-          <Show when={!isLinked()}>
+          <Show when={!canCreateClip()}>
             <Badge variant="outline" size="sm">
               Not linked
             </Badge>

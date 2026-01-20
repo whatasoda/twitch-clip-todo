@@ -16,6 +16,7 @@ describe("RecordService", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     const all = await service.getAll();
@@ -30,6 +31,7 @@ describe("RecordService", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     const found = await service.getById(record.id);
@@ -48,6 +50,7 @@ describe("RecordService", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
     await service.create({
       streamerId: "test2",
@@ -55,6 +58,7 @@ describe("RecordService", () => {
       timestampSeconds: 200,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
     await service.create({
       streamerId: "test1",
@@ -62,6 +66,7 @@ describe("RecordService", () => {
       timestampSeconds: 300,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     const records = await service.getByStreamerId("test1");
@@ -75,6 +80,7 @@ describe("RecordService", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     const updated = await service.updateMemo(record.id, "New memo");
@@ -91,6 +97,7 @@ describe("RecordService", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     const completed = await service.markCompleted(record.id);
@@ -107,6 +114,7 @@ describe("RecordService", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     const linked = await service.linkToVod(record.id, "vod123", 500);
@@ -122,6 +130,7 @@ describe("RecordService", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     await service.delete(record.id);
@@ -136,6 +145,7 @@ describe("RecordService", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
     const record2 = await service.create({
       streamerId: "test",
@@ -143,6 +153,7 @@ describe("RecordService", () => {
       timestampSeconds: 200,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
     await service.markCompleted(record2.id);
 

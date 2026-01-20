@@ -30,12 +30,13 @@ export function useRecordActions() {
   }
 
   async function openClipCreation(record: Record): Promise<void> {
-    if (!record.vodId) {
-      throw new Error("Record is not linked to a VOD");
+    if (!record.vodId && !record.broadcastId) {
+      throw new Error("Record has no VOD or broadcast ID");
     }
 
     const url = buildClipCreationUrl({
-      vodId: record.vodId,
+      vodId: record.vodId ?? undefined,
+      broadcastId: record.broadcastId ?? undefined,
       offsetSeconds: record.timestampSeconds,
       broadcasterLogin: record.streamerId,
     });

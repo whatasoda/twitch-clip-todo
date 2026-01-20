@@ -15,6 +15,7 @@ describe("createRecord", () => {
       timestampSeconds: 3600,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
 
     expect(record.id).toBeDefined();
@@ -32,6 +33,7 @@ describe("isRecordLinked", () => {
       timestampSeconds: 100,
       sourceType: "vod",
       vodId: "12345",
+      broadcastId: null,
     });
     expect(isRecordLinked(record)).toBe(true);
   });
@@ -43,6 +45,7 @@ describe("isRecordLinked", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
     expect(isRecordLinked(record)).toBe(false);
   });
@@ -56,6 +59,7 @@ describe("isRecordCompleted", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
     expect(isRecordCompleted(record)).toBe(false);
   });
@@ -67,6 +71,7 @@ describe("isRecordCompleted", () => {
       timestampSeconds: 100,
       sourceType: "live",
       vodId: null,
+      broadcastId: null,
     });
     record.completedAt = new Date().toISOString();
     expect(isRecordCompleted(record)).toBe(true);
@@ -82,6 +87,7 @@ describe("groupRecordsByStreamer", () => {
         timestampSeconds: 1,
         sourceType: "live",
         vodId: null,
+        broadcastId: null,
       }),
       createRecord({
         streamerId: "b",
@@ -89,6 +95,7 @@ describe("groupRecordsByStreamer", () => {
         timestampSeconds: 2,
         sourceType: "live",
         vodId: null,
+        broadcastId: null,
       }),
       createRecord({
         streamerId: "a",
@@ -96,6 +103,7 @@ describe("groupRecordsByStreamer", () => {
         timestampSeconds: 3,
         sourceType: "live",
         vodId: null,
+        broadcastId: null,
       }),
     ];
 
@@ -116,6 +124,7 @@ describe("sortRecordsByDate", () => {
           timestampSeconds: 1,
           sourceType: "live" as const,
           vodId: null,
+          broadcastId: null,
         }),
         createdAt: new Date(now - 1000).toISOString(),
       },
@@ -126,6 +135,7 @@ describe("sortRecordsByDate", () => {
           timestampSeconds: 2,
           sourceType: "live" as const,
           vodId: null,
+          broadcastId: null,
         }),
         createdAt: new Date(now + 1000).toISOString(),
       },
@@ -136,6 +146,7 @@ describe("sortRecordsByDate", () => {
           timestampSeconds: 3,
           sourceType: "live" as const,
           vodId: null,
+          broadcastId: null,
         }),
         createdAt: new Date(now).toISOString(),
       },
@@ -157,6 +168,7 @@ describe("sortRecordsByDate", () => {
           timestampSeconds: 1,
           sourceType: "live" as const,
           vodId: null,
+          broadcastId: null,
         }),
         createdAt: new Date(now - 1000).toISOString(),
       },
@@ -167,6 +179,7 @@ describe("sortRecordsByDate", () => {
           timestampSeconds: 2,
           sourceType: "live" as const,
           vodId: null,
+          broadcastId: null,
         }),
         createdAt: new Date(now + 1000).toISOString(),
       },

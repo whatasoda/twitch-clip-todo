@@ -14,6 +14,7 @@ export function createRecord(payload: CreateRecordPayload): Record {
     memo: "",
     sourceType: payload.sourceType,
     vodId: payload.vodId,
+    broadcastId: payload.broadcastId,
     recordedAt: now,
     completedAt: null,
     createdAt: now,
@@ -23,6 +24,10 @@ export function createRecord(payload: CreateRecordPayload): Record {
 
 export function isRecordLinked(record: Record): boolean {
   return record.vodId !== null;
+}
+
+export function canCreateClip(record: Record): boolean {
+  return record.vodId !== null || record.broadcastId !== null;
 }
 
 export function isRecordCompleted(record: Record): boolean {

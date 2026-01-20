@@ -6,6 +6,7 @@ export interface Record {
   memo: string;
   sourceType: "live" | "vod";
   vodId: string | null;
+  broadcastId: string | null;
   recordedAt: string; // ISO 8601 - ストリーム内の記録時刻
   completedAt: string | null; // ISO 8601
   createdAt: string; // ISO 8601
@@ -23,4 +24,5 @@ export interface CreateRecordPayload {
   timestampSeconds: number;
   sourceType: "live" | "vod";
   vodId: string | null;
+  broadcastId: string | null;
 }
