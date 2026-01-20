@@ -1,5 +1,5 @@
 import type { Record } from "../core/record";
-import type { StreamerInfo, VodMetadata } from "../services/twitch.service";
+import type { LiveStreamInfo, StreamerInfo, VodMetadata } from "../services/twitch.service";
 import type {
   CreateRecordPayload,
   LinkVodPayload,
@@ -25,6 +25,13 @@ export async function getStreamerInfo(login: string): Promise<StreamerInfo | nul
 
 export async function getVodMetadataFromApi(vodId: string): Promise<VodMetadata | null> {
   return sendMessage<VodMetadata | null>({ type: "TWITCH_GET_VOD_METADATA", payload: { vodId } });
+}
+
+export async function getCurrentStream(login: string): Promise<LiveStreamInfo | null> {
+  return sendMessage<LiveStreamInfo | null>({
+    type: "TWITCH_GET_CURRENT_STREAM",
+    payload: { login },
+  });
 }
 
 export async function createRecord(payload: CreateRecordPayload): Promise<Record> {

@@ -2,6 +2,7 @@ import type { PageInfo } from "../core/twitch";
 import { getCurrentPageInfo, setupNavigationListener } from "./detector";
 import {
   createRecord,
+  getCurrentStream,
   getPendingCount,
   getStreamerInfo,
   getVodMetadataFromApi,
@@ -29,7 +30,29 @@ async function handleRecord(): Promise<void> {
     return;
   }
 
-  const timestamp = getPlayerTimestamp();
+  const loginFromUrl = pageInfo.streamerId;
+
+  // Get timestamp - different strategies for live vs VOD
+  let timestamp: number | null = null;
+
+  if (pageInfo.type === "live" && loginFromUrl) {
+    // Live: Calculate elapsed time from API's started_at
+    try {
+      const streamInfo = await getCurrentStream(loginFromUrl);
+      if (streamInfo?.startedAt) {
+        const elapsedMs = Date.now() - new Date(streamInfo.startedAt).getTime();
+        timestamp = Math.floor(elapsedMs / 1000);
+      }
+    } catch {
+      // API failed, will try DOM fallback
+    }
+  }
+
+  // DOM fallback (primary method for VOD, fallback for live)
+  if (timestamp === null) {
+    timestamp = getPlayerTimestamp();
+  }
+
   if (timestamp === null) {
     showToast("Could not get timestamp", "error");
     return;
@@ -37,7 +60,6 @@ async function handleRecord(): Promise<void> {
 
   // Try to get streamer name from API first, then fallback to DOM
   let streamerName: string | null = null;
-  const loginFromUrl = pageInfo.streamerId;
 
   if (loginFromUrl) {
     try {
