@@ -1,4 +1,4 @@
-import type { LinkingService, RecordService } from "../services";
+import type { LinkingService, RecordService, TwitchService } from "../services";
 import type {
   CreateRecordPayload,
   LinkVodPayload,
@@ -9,16 +9,65 @@ import type {
 export interface MessageHandlerDeps {
   recordService: RecordService;
   linkingService: LinkingService;
+  twitchService: TwitchService | null;
 }
 
 export async function handleMessage(
   message: MessageToBackground,
   deps: MessageHandlerDeps,
 ): Promise<MessageResponse<unknown>> {
-  const { recordService, linkingService } = deps;
+  const { recordService, linkingService, twitchService } = deps;
 
   try {
     switch (message.type) {
+      // Twitch API messages
+      case "TWITCH_GET_AUTH_STATUS": {
+        const isAuthenticated = twitchService ? await twitchService.isAuthenticated() : false;
+        return { success: true, data: { isAuthenticated } };
+      }
+
+      case "TWITCH_AUTHENTICATE": {
+        if (!twitchService) {
+          return { success: false, error: "Twitch service not initialized" };
+        }
+        await twitchService.authenticate();
+        return { success: true, data: null };
+      }
+
+      case "TWITCH_LOGOUT": {
+        if (!twitchService) {
+          return { success: false, error: "Twitch service not initialized" };
+        }
+        await twitchService.logout();
+        return { success: true, data: null };
+      }
+
+      case "TWITCH_GET_STREAMER_INFO": {
+        if (!twitchService) {
+          return { success: true, data: null };
+        }
+        const { login } = message.payload as { login: string };
+        const info = await twitchService.getStreamerInfo(login);
+        return { success: true, data: info };
+      }
+
+      case "TWITCH_GET_VOD_METADATA": {
+        if (!twitchService) {
+          return { success: true, data: null };
+        }
+        const { vodId } = message.payload as { vodId: string };
+        const metadata = await twitchService.getVodMetadata(vodId);
+        return { success: true, data: metadata };
+      }
+
+      case "TWITCH_GET_CURRENT_STREAM": {
+        if (!twitchService) {
+          return { success: true, data: null };
+        }
+        const { login } = message.payload as { login: string };
+        const stream = await twitchService.getCurrentStream(login);
+        return { success: true, data: stream };
+      }
       case "CREATE_RECORD": {
         const record = await recordService.create(message.payload as CreateRecordPayload);
         return { success: true, data: record };

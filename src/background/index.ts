@@ -1,5 +1,12 @@
 import { createChromeAPI } from "../infrastructure/chrome";
-import { createCleanupService, createLinkingService, createRecordService } from "../services";
+import { createTwitchApiClient, createTwitchAuthAPI } from "../infrastructure/twitch-api";
+import {
+  createCleanupService,
+  createLinkingService,
+  createRecordService,
+  createTwitchService,
+} from "../services";
+import { TWITCH_CLIENT_ID } from "../shared/constants";
 import type { MessageToBackground } from "../shared/types";
 import { handleMessage } from "./message-handler";
 
@@ -13,6 +20,20 @@ const cleanupService = createCleanupService({
   storage: chromeAPI.storage,
   alarms: chromeAPI.alarms,
 });
+
+// Initialize Twitch API services (only if CLIENT_ID is configured)
+const twitchAuth = createTwitchAuthAPI();
+const twitchClient = createTwitchApiClient({ auth: twitchAuth });
+const twitchService =
+  TWITCH_CLIENT_ID !== "__TWITCH_CLIENT_ID__"
+    ? createTwitchService({ auth: twitchAuth, client: twitchClient })
+    : null;
+
+if (!twitchService) {
+  console.warn(
+    "[Twitch Clip Todo] Twitch API not configured. Set TWITCH_CLIENT_ID to enable API features.",
+  );
+}
 
 // Initialize cleanup on startup
 cleanupService.initialize();
@@ -28,7 +49,7 @@ chrome.runtime.onMessage.addListener((message: MessageToBackground, sender, send
     return true;
   }
 
-  handleMessage(message, { recordService, linkingService })
+  handleMessage(message, { recordService, linkingService, twitchService })
     .then(sendResponse)
     .catch((error) =>
       sendResponse({
