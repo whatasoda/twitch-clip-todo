@@ -41,16 +41,19 @@ chrome.runtime.onMessage.addListener((message: MessageToBackground, sender, send
 
 // Keyboard shortcut handler
 chrome.commands.onCommand.addListener((command, tab) => {
-  if (command === "record-moment" && tab?.id) {
-    chrome.tabs.sendMessage(tab.id, { type: "TRIGGER_RECORD" });
+  if (command === "record-moment" && tab?.id && tab.url) {
+    // Only send message if on Twitch
+    if (tab.url.includes("twitch.tv")) {
+      chrome.tabs.sendMessage(tab.id, { type: "TRIGGER_RECORD" }).catch(() => {
+        // Content script not ready, ignore
+      });
+    }
   }
 });
 
-// Open side panel when extension icon is clicked
-chrome.action.onClicked.addListener((tab) => {
-  if (tab.id) {
-    chromeAPI.sidePanel.open({ tabId: tab.id });
-  }
+// Enable side panel to open when extension icon is clicked
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {
+  // Ignore errors during initialization
 });
 
 console.log("[Twitch Clip Todo] Service Worker initialized");
