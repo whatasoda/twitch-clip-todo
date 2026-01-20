@@ -8,7 +8,8 @@ export const STORAGE_KEYS = {
 
 // Twitch API configuration
 // Client ID should be set via environment variable or replaced before build
-export const TWITCH_CLIENT_ID = "__TWITCH_CLIENT_ID__";
+// cspell:disable-next-line
+export const TWITCH_CLIENT_ID = "ut0bh6j4ehxyff1fxdm0rbo0jmirrg";
 export const TWITCH_REDIRECT_URI =
   typeof chrome !== "undefined" && chrome.identity
     ? chrome.identity.getRedirectURL()
