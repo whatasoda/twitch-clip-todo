@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import { Box, Flex } from "../../../styled-system/jsx";
+import { Box, Flex, HStack } from "../../../styled-system/jsx";
 import type { PageInfo } from "../../core/twitch";
+import { AuthButton } from "./AuthButton";
 
 interface HeaderProps {
   pageInfo: PageInfo;
@@ -19,15 +20,18 @@ export function Header(props: HeaderProps) {
 
   return (
     <Box p="4" borderBottomWidth="1px" borderColor="border.default" bg="bg.muted">
-      <Flex alignItems="center" gap="2">
-        <Box fontWeight="semibold" fontSize="lg">
-          {title()}
-        </Box>
-        {props.pageInfo.type !== "other" && (
-          <Badge variant={props.pageInfo.type === "live" ? "solid" : "outline"}>
-            {props.pageInfo.type === "live" ? "Live" : "VOD"}
-          </Badge>
-        )}
+      <Flex alignItems="center" justifyContent="space-between" gap="2">
+        <HStack gap="2">
+          <Box fontWeight="semibold" fontSize="lg">
+            {title()}
+          </Box>
+          {props.pageInfo.type !== "other" && (
+            <Badge variant={props.pageInfo.type === "live" ? "solid" : "outline"}>
+              {props.pageInfo.type === "live" ? "Live" : "VOD"}
+            </Badge>
+          )}
+        </HStack>
+        <AuthButton />
       </Flex>
     </Box>
   );
