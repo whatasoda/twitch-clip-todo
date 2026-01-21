@@ -12,13 +12,22 @@ export function showMemoInput(
   host.id = "twitch-clips-todo-memo";
   const shadowRoot = host.attachShadow({ mode: "closed" });
 
+  const backdrop = document.createElement("div");
+  backdrop.setAttribute("style", styles.memoInput.backdrop);
+
   const container = document.createElement("div");
   container.setAttribute("style", styles.memoInput.container);
+  // Prevent clicks inside container from triggering backdrop click
+  container.addEventListener("click", (e) => e.stopPropagation());
+
+  const title = document.createElement("div");
+  title.setAttribute("style", styles.memoInput.title);
+  title.textContent = "後でクリップを取れるようメモをしよう";
 
   const input = document.createElement("input");
   input.setAttribute("style", styles.memoInput.input);
   input.type = "text";
-  input.placeholder = "Add a memo (optional)";
+  input.placeholder = "どんな瞬間でしたか？";
 
   const buttonRow = document.createElement("div");
   buttonRow.setAttribute("style", styles.memoInput.buttonRow);
@@ -67,6 +76,7 @@ export function showMemoInput(
       }
     } else if (e.key === "Escape") {
       e.preventDefault();
+      e.stopPropagation();
       // ESC should always cancel, even during composition
       handleCancel();
     }
@@ -74,12 +84,15 @@ export function showMemoInput(
 
   saveBtn.addEventListener("click", handleSave);
   cancelBtn.addEventListener("click", handleCancel);
+  backdrop.addEventListener("click", handleCancel);
 
   buttonRow.appendChild(cancelBtn);
   buttonRow.appendChild(saveBtn);
+  container.appendChild(title);
   container.appendChild(input);
   container.appendChild(buttonRow);
-  shadowRoot.appendChild(container);
+  backdrop.appendChild(container);
+  shadowRoot.appendChild(backdrop);
 
   document.body.appendChild(host);
   containerElement = host;

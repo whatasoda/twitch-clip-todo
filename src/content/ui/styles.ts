@@ -63,6 +63,15 @@ export const styles = {
     hover: `background: rgba(255, 255, 255, 0.15);`,
   },
   memoInput: {
+    backdrop: `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      background: transparent;
+    `,
     container: `
       position: fixed;
       bottom: 80px;
@@ -74,6 +83,12 @@ export const styles = {
       padding: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    `,
+    title: `
+      color: #efeff1;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
     `,
     input: `
       width: 320px;
