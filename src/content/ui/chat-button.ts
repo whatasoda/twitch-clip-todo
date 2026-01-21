@@ -1,13 +1,8 @@
-import { styles } from "./styles";
+import { BOOKMARK_ICON_OUTLINED, styles } from "./styles";
 
 let chatButtonElement: HTMLElement | null = null;
 let retryTimeoutId: number | null = null;
 let observer: MutationObserver | null = null;
-
-// Same bookmark icon as the player button
-const bookmarkIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-  <path d="M4 2h12a1 1 0 0 1 1 1v15.143a.5.5 0 0 1-.766.424L10 15.03l-6.234 3.536A.5.5 0 0 1 3 18.143V3a1 1 0 0 1 1-1z"/>
-</svg>`;
 
 function createChatButton(onClick: () => void): HTMLElement {
   const host = document.createElement("div");
@@ -18,7 +13,7 @@ function createChatButton(onClick: () => void): HTMLElement {
   button.setAttribute("style", styles.chatButton.base);
   button.setAttribute("aria-label", "Clip Later (Alt+Shift+C)");
   button.title = "Record moment (Alt+Shift+C)";
-  button.innerHTML = bookmarkIcon;
+  button.innerHTML = BOOKMARK_ICON_OUTLINED;
 
   button.addEventListener("mouseenter", () => {
     button.style.background = "rgba(255, 255, 255, 0.15)";
@@ -38,33 +33,36 @@ function createChatButton(onClick: () => void): HTMLElement {
 }
 
 /**
- * Find the chat settings gear button.
+ * Find the chat input buttons container closest to the send button.
+ * Insert at the beginning of the right-side div (後ろの方の先頭).
  */
-function findChatSettingsButton(): HTMLElement | null {
-  return document.querySelector('[data-a-target="chat-settings"]');
+function findChatInputButtonsContainer(): HTMLElement | null {
+  // Find all .chat-input__buttons-container elements
+  const containers = document.querySelectorAll(".chat-input__buttons-container");
+  // Get the last one (closest to send button)
+  const container = containers[containers.length - 1];
+  if (!container) return null;
+
+  // Find child divs - we want the last div (right side)
+  const childDivs = container.querySelectorAll(":scope > div");
+  const lastDiv = childDivs[childDivs.length - 1];
+  if (!lastDiv) return null;
+
+  // Return the last div (後ろの方)
+  return lastDiv as HTMLElement;
 }
 
 /**
- * Try to inject the button next to chat settings gear icon.
+ * Try to inject the button into chat input buttons area.
  * Returns true if successful.
  */
-function tryInjectNextToChatSettings(buttonHost: HTMLElement): boolean {
-  const chatSettings = findChatSettingsButton();
+function tryInjectIntoChatInputButtons(buttonHost: HTMLElement): boolean {
+  const targetDiv = findChatInputButtonsContainer();
 
-  if (chatSettings) {
-    // Navigate up to find the wrapper
-    let wrapper = chatSettings.parentElement;
-
-    while (wrapper && wrapper.parentElement) {
-      const parent = wrapper.parentElement;
-      // Check if parent is a button container
-      if (parent.children.length >= 1) {
-        // Insert our button before the chat settings button's wrapper
-        parent.insertBefore(buttonHost, wrapper);
-        return true;
-      }
-      wrapper = parent;
-    }
+  if (targetDiv) {
+    // Insert at the beginning (先頭)
+    targetDiv.insertBefore(buttonHost, targetDiv.firstChild);
+    return true;
   }
 
   return false;
@@ -76,7 +74,8 @@ function attemptInjection(onClick: () => void): void {
   const button = createChatButton(onClick);
   chatButtonElement = button;
 
-  if (!tryInjectNextToChatSettings(button)) {
+  // Try to inject into chat input buttons area
+  if (!tryInjectIntoChatInputButtons(button)) {
     // If we couldn't inject, store the button but don't add it to DOM yet
     chatButtonElement = null;
   }
@@ -103,17 +102,21 @@ export function injectChatButton(onClick: () => void): void {
     observer = new MutationObserver(() => {
       if (chatButtonElement) return;
 
-      const chatSettings = findChatSettingsButton();
-      if (chatSettings) {
+      // Check if injection target is now available
+      const targetDiv = findChatInputButtonsContainer();
+
+      if (targetDiv) {
         chatButtonElement = button;
 
-        if (!tryInjectNextToChatSettings(button)) {
-          chatButtonElement = null;
-        } else {
+        if (tryInjectIntoChatInputButtons(button)) {
           // Success - clean up observer
           observer?.disconnect();
           observer = null;
+          return;
         }
+
+        // If injection failed, reset
+        chatButtonElement = null;
       }
     });
 
@@ -127,7 +130,8 @@ export function injectChatButton(onClick: () => void): void {
       if (chatButtonElement) return;
 
       chatButtonElement = button;
-      if (!tryInjectNextToChatSettings(button)) {
+
+      if (!tryInjectIntoChatInputButtons(button)) {
         chatButtonElement = null;
       }
 

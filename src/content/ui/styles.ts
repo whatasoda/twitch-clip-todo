@@ -1,3 +1,8 @@
+// Outlined bookmark icon (shared between player and chat buttons)
+export const BOOKMARK_ICON_OUTLINED = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M5 3h10a1 1 0 0 1 1 1v14l-6-3.5-6 3.5V4a1 1 0 0 1 1-1z"/>
+</svg>`;
+
 // Inline styles for content script UI (Shadow DOM)
 export const styles = {
   // Legacy button style (keeping for reference)
@@ -28,7 +33,7 @@ export const styles = {
       height: 30px;
       padding: 0 10px;
       border: none;
-      border-radius: 4px;
+      border-radius: 15px;
       background: rgba(255, 255, 255, 0.15);
       color: white;
       cursor: pointer;
@@ -49,7 +54,7 @@ export const styles = {
       width: 30px;
       height: 30px;
       border: none;
-      border-radius: 4px;
+      border-radius: 15px;
       background: transparent;
       color: #efeff1;
       cursor: pointer;
@@ -108,7 +113,7 @@ export const styles = {
   toast: {
     base: `
       position: fixed;
-      bottom: 20px;
+      top: 20px;
       right: 20px;
       z-index: 10001;
       padding: 12px 16px;

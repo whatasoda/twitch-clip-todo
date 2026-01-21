@@ -1,13 +1,8 @@
-import { styles } from "./styles";
+import { BOOKMARK_ICON_OUTLINED, styles } from "./styles";
 
 let buttonElement: HTMLElement | null = null;
 let retryTimeoutId: number | null = null;
 let observer: MutationObserver | null = null;
-
-// Bookmark SVG icon matching Twitch's icon style
-const bookmarkIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-  <path d="M4 2h12a1 1 0 0 1 1 1v15.143a.5.5 0 0 1-.766.424L10 15.03l-6.234 3.536A.5.5 0 0 1 3 18.143V3a1 1 0 0 1 1-1z"/>
-</svg>`;
 
 function createRecordButton(onClick: () => void): HTMLElement {
   const host = document.createElement("div");
@@ -19,7 +14,7 @@ function createRecordButton(onClick: () => void): HTMLElement {
   button.setAttribute("aria-label", "Clip Later (Alt+Shift+C)");
   button.title = "Record moment (Alt+Shift+C)";
   button.innerHTML = `
-    <span style="display: flex; align-items: center;">${bookmarkIcon}</span>
+    <span style="display: flex; align-items: center;">${BOOKMARK_ICON_OUTLINED}</span>
     <span>Clip Later</span>
   `;
 
