@@ -28,22 +28,6 @@ export interface ChromeCommandsAPI {
   };
 }
 
-export interface SidePanelOpenOptions {
-  tabId?: number;
-  windowId?: number;
-}
-
-export interface SidePanelSetOptions {
-  enabled?: boolean;
-  path?: string;
-  tabId?: number;
-}
-
-export interface ChromeSidePanelAPI {
-  open(options: SidePanelOpenOptions): Promise<void>;
-  setOptions(options: SidePanelSetOptions): Promise<void>;
-}
-
 export interface ChromeAlarmsAPI {
   create(name: string, alarmInfo: chrome.alarms.AlarmCreateInfo): void;
   onAlarm: {
@@ -56,6 +40,5 @@ export interface ChromeAPI {
   runtime: ChromeRuntimeAPI;
   tabs: ChromeTabsAPI;
   commands: ChromeCommandsAPI;
-  sidePanel: ChromeSidePanelAPI;
   alarms: ChromeAlarmsAPI;
 }

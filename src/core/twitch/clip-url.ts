@@ -11,7 +11,11 @@ export interface ClipUrlParams {
 export function buildClipCreationUrl(params: ClipUrlParams): string {
   const searchParams = new URLSearchParams({
     // vodId を優先、なければ broadcastId を使用
-    ...(params.vodId ? { vodID: params.vodId } : params.broadcastId ? { broadcastID: params.broadcastId } : {}),
+    ...(params.vodId
+      ? { vodID: params.vodId }
+      : params.broadcastId
+        ? { broadcastID: params.broadcastId }
+        : {}),
     broadcasterLogin: params.broadcasterLogin,
     offsetSeconds: String(params.offsetSeconds),
   });

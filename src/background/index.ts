@@ -35,16 +35,7 @@ if (!twitchService) {
 cleanupService.initialize();
 
 // Message handler
-chrome.runtime.onMessage.addListener((message: MessageToBackground, sender, sendResponse) => {
-  // Handle OPEN_SIDE_PANEL separately as it needs sender.tab
-  if (message.type === "OPEN_SIDE_PANEL" && sender.tab?.id) {
-    chromeAPI.sidePanel
-      .open({ tabId: sender.tab.id })
-      .then(() => sendResponse({ success: true, data: null }))
-      .catch((error) => sendResponse({ success: false, error: String(error) }));
-    return true;
-  }
-
+chrome.runtime.onMessage.addListener((message: MessageToBackground, _sender, sendResponse) => {
   handleMessage(message, { recordService, linkingService, twitchService })
     .then(sendResponse)
     .catch((error) =>
@@ -66,11 +57,6 @@ chrome.commands.onCommand.addListener((command, tab) => {
       });
     }
   }
-});
-
-// Enable side panel to open when extension icon is clicked
-chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {
-  // Ignore errors during initialization
 });
 
 console.log("[Twitch Clip Todo] Service Worker initialized");

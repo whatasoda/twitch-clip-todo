@@ -23,7 +23,7 @@ export default defineConfig({
     outDir: "dist",
     rollupOptions: {
       input: {
-        sidepanel: "src/sidepanel/index.html",
+        popup: "src/popup/index.html",
       },
     },
   },

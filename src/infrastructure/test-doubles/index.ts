@@ -38,7 +38,6 @@ export function createMockChromeAPI(overrides: Partial<ChromeAPI> = {}): ChromeA
     runtime: createMockRuntimeAPI(),
     tabs: { create: async () => ({}) as chrome.tabs.Tab, query: async () => [] },
     commands: { onCommand: { addListener: () => {} } },
-    sidePanel: { open: async () => {}, setOptions: async () => {} },
     alarms: { create: () => {}, onAlarm: { addListener: () => {} } },
     ...overrides,
   };

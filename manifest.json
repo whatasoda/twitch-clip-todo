@@ -8,17 +8,13 @@
     "tabs",
     "storage",
     "activeTab",
-    "sidePanel",
     "alarms"
   ],
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"
   },
-  "side_panel": {
-    "default_path": "src/sidepanel/index.html"
-  },
-  "content_scripts": [
+    "content_scripts": [
     {
       "matches": [
         "https://www.twitch.tv/*",
@@ -38,6 +34,7 @@
     }
   },
   "action": {
-    "default_title": "Twitch Clip Todo"
+    "default_title": "Twitch Clip Todo",
+    "default_popup": "src/popup/index.html"
   }
 }

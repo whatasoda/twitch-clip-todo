@@ -127,11 +127,6 @@ export async function handleMessage(
         return { success: true, data: count };
       }
 
-      case "OPEN_SIDE_PANEL": {
-        // This is handled directly in index.ts
-        return { success: true, data: null };
-      }
-
       default:
         return { success: false, error: "Unknown message type" };
     }

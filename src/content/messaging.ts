@@ -50,6 +50,6 @@ export async function linkVod(payload: LinkVodPayload): Promise<Record[]> {
   return sendMessage<Record[]>({ type: "LINK_VOD", payload });
 }
 
-export async function openSidePanel(): Promise<void> {
-  await sendMessage<null>({ type: "OPEN_SIDE_PANEL" });
+export async function deleteRecord(id: string): Promise<void> {
+  await sendMessage<null>({ type: "DELETE_RECORD", payload: { id } });
 }

@@ -1,5 +1,11 @@
+// Outlined bookmark icon (shared between player and chat buttons)
+export const BOOKMARK_ICON_OUTLINED = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M5 3h10a1 1 0 0 1 1 1v14l-6-3.5-6 3.5V4a1 1 0 0 1 1-1z"/>
+</svg>`;
+
 // Inline styles for content script UI (Shadow DOM)
 export const styles = {
+  // Legacy button style (keeping for reference)
   button: {
     base: `
       display: flex;
@@ -18,7 +24,54 @@ export const styles = {
     hover: `background: #772ce8;`,
     active: `transform: scale(0.95);`,
   },
+  // Twitch-native player button style
+  playerButton: {
+    base: `
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      padding: 0 10px;
+      border: none;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      font-size: 13px;
+      font-weight: 600;
+      gap: 5px;
+      font-family: inherit;
+    `,
+    hover: `background: rgba(255, 255, 255, 0.25);`,
+  },
+  // Chat panel button style
+  chatButton: {
+    base: `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 15px;
+      background: transparent;
+      color: #efeff1;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    `,
+    hover: `background: rgba(255, 255, 255, 0.15);`,
+  },
   memoInput: {
+    backdrop: `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      background: transparent;
+    `,
     container: `
       position: fixed;
       bottom: 80px;
@@ -31,8 +84,14 @@ export const styles = {
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     `,
+    title: `
+      color: #efeff1;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    `,
     input: `
-      width: 200px;
+      width: 320px;
       padding: 8px 12px;
       border: 1px solid #3d3d3d;
       border-radius: 4px;
@@ -69,7 +128,7 @@ export const styles = {
   toast: {
     base: `
       position: fixed;
-      bottom: 20px;
+      top: 20px;
       right: 20px;
       z-index: 10001;
       padding: 12px 16px;

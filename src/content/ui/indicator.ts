@@ -3,7 +3,7 @@ import { styles } from "./styles";
 let indicatorElement: HTMLElement | null = null;
 let shadowRoot: ShadowRoot | null = null;
 
-export function showIndicator(count: number, onClick: () => void): void {
+export function showIndicator(count: number): void {
   if (indicatorElement) {
     updateIndicatorCount(count);
     return;
@@ -15,6 +15,7 @@ export function showIndicator(count: number, onClick: () => void): void {
 
   const container = document.createElement("div");
   container.setAttribute("style", styles.indicator.container);
+  container.title = "Click extension icon to view records";
 
   const badge = document.createElement("span");
   badge.setAttribute("style", styles.indicator.badge);
@@ -27,14 +28,6 @@ export function showIndicator(count: number, onClick: () => void): void {
 
   container.appendChild(badge);
   container.appendChild(text);
-
-  container.addEventListener("click", onClick);
-  container.addEventListener("mouseenter", () => {
-    container.style.transform = "scale(1.05)";
-  });
-  container.addEventListener("mouseleave", () => {
-    container.style.transform = "scale(1)";
-  });
 
   shadowRoot.appendChild(container);
   document.body.appendChild(host);
