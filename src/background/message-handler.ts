@@ -1,4 +1,9 @@
-import type { LinkingService, RecordService, TwitchService, VodDiscoveryService } from "../services";
+import type {
+  LinkingService,
+  RecordService,
+  TwitchService,
+  VodDiscoveryService,
+} from "../services";
 import type {
   CreateRecordPayload,
   LinkVodPayload,

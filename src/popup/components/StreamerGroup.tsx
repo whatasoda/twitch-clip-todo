@@ -49,12 +49,7 @@ export function StreamerGroup(props: StreamerGroupProps) {
         <Box fontWeight="semibold">{props.streamerName}</Box>
         <HStack gap="2">
           <Show when={unlinkedCount() > 0}>
-            <Button
-              size="xs"
-              variant="ghost"
-              onClick={handleFindVods}
-              disabled={isLoading()}
-            >
+            <Button size="xs" variant="ghost" onClick={handleFindVods} disabled={isLoading()}>
               <Search size={14} /> Find VODs
             </Button>
           </Show>

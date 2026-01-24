@@ -18,7 +18,10 @@ export interface VideosEndpoint {
   getById(id: string): Promise<TwitchVideo | null>;
   getByIds(ids: string[]): Promise<TwitchVideo[]>;
   getByUserId(userId: string, options?: GetByUserIdOptions): Promise<TwitchVideo[]>;
-  getByUserIdWithPagination(userId: string, options?: GetByUserIdOptions): Promise<GetByUserIdResult>;
+  getByUserIdWithPagination(
+    userId: string,
+    options?: GetByUserIdOptions,
+  ): Promise<GetByUserIdResult>;
   getArchivesByUserId(userId: string, options?: { first?: number }): Promise<TwitchVideo[]>;
 }
 
