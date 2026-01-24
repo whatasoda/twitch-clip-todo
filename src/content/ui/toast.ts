@@ -1,3 +1,4 @@
+import { createShadowHost, injectStyles } from "./shadow-dom";
 import { styles } from "./styles";
 
 let toastTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -10,13 +11,12 @@ export function showToast(message: string, type: "success" | "error" | "info" = 
     clearTimeout(toastTimeout);
   }
 
-  const host = document.createElement("div");
-  host.id = "twitch-clips-todo-toast";
-  const shadowRoot = host.attachShadow({ mode: "closed" });
+  const { host, shadow } = createShadowHost("twitch-clips-todo-toast");
 
   // Add animation keyframes
-  const styleSheet = document.createElement("style");
-  styleSheet.textContent = `
+  injectStyles(
+    shadow,
+    `
     @keyframes slideIn {
       from {
         transform: translateX(100%);
@@ -37,15 +37,15 @@ export function showToast(message: string, type: "success" | "error" | "info" = 
         opacity: 0;
       }
     }
-  `;
+  `,
+  );
 
   const toast = document.createElement("div");
   const typeStyle = styles.toast[type];
   toast.setAttribute("style", styles.toast.base + typeStyle);
   toast.textContent = message;
 
-  shadowRoot.appendChild(styleSheet);
-  shadowRoot.appendChild(toast);
+  shadow.appendChild(toast);
   document.body.appendChild(host);
 
   // Auto-dismiss after 3 seconds

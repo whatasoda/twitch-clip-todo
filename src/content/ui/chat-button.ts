@@ -1,3 +1,4 @@
+import { createShadowHost } from "./shadow-dom";
 import { BOOKMARK_ICON_OUTLINED, styles } from "./styles";
 
 let chatButtonElement: HTMLElement | null = null;
@@ -5,9 +6,7 @@ let retryTimeoutId: number | null = null;
 let observer: MutationObserver | null = null;
 
 function createChatButton(onClick: () => void): HTMLElement {
-  const host = document.createElement("div");
-  host.id = "twitch-clips-todo-chat-button";
-  const shadowRoot = host.attachShadow({ mode: "closed" });
+  const { host, shadow } = createShadowHost("twitch-clips-todo-chat-button");
 
   const button = document.createElement("button");
   button.setAttribute("style", styles.chatButton.base);
@@ -27,7 +26,7 @@ function createChatButton(onClick: () => void): HTMLElement {
     onClick();
   });
 
-  shadowRoot.appendChild(button);
+  shadow.appendChild(button);
 
   return host;
 }

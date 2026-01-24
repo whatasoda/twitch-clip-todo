@@ -1,3 +1,4 @@
+import { createShadowHost, injectStyles } from "./shadow-dom";
 import { BOOKMARK_ICON_OUTLINED } from "./styles";
 import widgetStyles from "./floating-widget.css?raw";
 
@@ -80,16 +81,11 @@ function savePosition(rect: DOMRect): void {
 }
 
 function createWidget(count: number): HTMLElement {
-  const host = document.createElement("div");
-  host.id = "twitch-clip-todo-floating-widget";
-
-  const shadow = host.attachShadow({ mode: "closed" });
+  const { host, shadow } = createShadowHost("twitch-clip-todo-floating-widget");
   shadowRoot = shadow;
 
   // Inject CSS from file
-  const style = document.createElement("style");
-  style.textContent = widgetStyles;
-  shadow.appendChild(style);
+  injectStyles(shadow, widgetStyles);
 
   const button = document.createElement("button");
   button.className = "widget";

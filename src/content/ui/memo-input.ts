@@ -1,3 +1,4 @@
+import { createShadowHost } from "./shadow-dom";
 import { styles } from "./styles";
 
 let containerElement: HTMLElement | null = null;
@@ -8,9 +9,7 @@ export function showMemoInput(
 ): void {
   if (containerElement) return;
 
-  const host = document.createElement("div");
-  host.id = "twitch-clips-todo-memo";
-  const shadowRoot = host.attachShadow({ mode: "closed" });
+  const { host, shadow } = createShadowHost("twitch-clips-todo-memo");
 
   const backdrop = document.createElement("div");
   backdrop.setAttribute("style", styles.memoInput.backdrop);
@@ -92,7 +91,7 @@ export function showMemoInput(
   container.appendChild(input);
   container.appendChild(buttonRow);
   backdrop.appendChild(container);
-  shadowRoot.appendChild(backdrop);
+  shadow.appendChild(backdrop);
 
   document.body.appendChild(host);
   containerElement = host;
