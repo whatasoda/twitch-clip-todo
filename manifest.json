@@ -8,7 +8,8 @@
     "tabs",
     "storage",
     "activeTab",
-    "alarms"
+    "alarms",
+    "sidePanel"
   ],
   "background": {
     "service_worker": "src/background/index.ts",
