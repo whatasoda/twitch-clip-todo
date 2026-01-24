@@ -1,4 +1,5 @@
-import { BOOKMARK_ICON_OUTLINED, styles } from "./styles";
+import { BOOKMARK_ICON_OUTLINED } from "./styles";
+import widgetStyles from "./floating-widget.css?raw";
 
 const STORAGE_KEY = "twitch-clip-todo-widget-position";
 const HIDE_DELAY_MS = 3000;
@@ -25,8 +26,8 @@ let isAutoHidden = false; // True after auto-hide, prevents re-show on mouseente
 // Event handler references for cleanup
 let mouseMoveHandler: ((e: MouseEvent) => void) | null = null;
 let mouseUpHandler: (() => void) | null = null;
-let mouseLeaveHandler: (() => void) | null = null;
-let mouseEnterHandler: (() => void) | null = null;
+let mouseLeaveHandler: ((e: MouseEvent) => void) | null = null;
+let mouseEnterHandler: ((e: MouseEvent) => void) | null = null;
 
 function loadPosition(): { x: number; y: number } {
   try {
@@ -85,55 +86,22 @@ function createWidget(count: number): HTMLElement {
   const shadow = host.attachShadow({ mode: "closed" });
   shadowRoot = shadow;
 
-  // Add styles
+  // Inject CSS from file
   const style = document.createElement("style");
-  style.textContent = `
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-    .widget {
-      animation: fadeIn 0.2s ease;
-    }
-    .widget.hiding {
-      animation: fadeOut 0.3s ease forwards;
-    }
-    .widget.hidden {
-      display: none;
-    }
-  `;
+  style.textContent = widgetStyles;
   shadow.appendChild(style);
 
   const button = document.createElement("button");
   button.className = "widget";
-  button.setAttribute("style", styles.floatingWidget.base);
   button.setAttribute(
     "aria-label",
     count > 0 ? `${count} pending clips - Click to open popup` : "Clip Todo - Click to open popup",
   );
   button.title = "Click to open Clip Todo panel\nDrag to move";
   button.innerHTML = `
-    <span style="display: flex; align-items: center;">${BOOKMARK_ICON_OUTLINED}</span>
-    ${count > 0 ? `<span style="${styles.floatingWidget.badge}">${count}</span>` : ""}
+    <span class="icon">${BOOKMARK_ICON_OUTLINED}</span>
+    ${count > 0 ? `<span class="badge">${count}</span>` : ""}
   `;
-
-  // Hover effects
-  button.addEventListener("mouseenter", () => {
-    if (!isDragging) {
-      button.style.background = "rgba(145, 71, 255, 0.9)";
-      button.style.transform = "scale(1.05)";
-    }
-  });
-  button.addEventListener("mouseleave", () => {
-    if (!isDragging) {
-      button.style.background = "rgba(145, 71, 255, 0.85)";
-      button.style.transform = "scale(1)";
-    }
-  });
 
   // Drag start
   button.addEventListener("mousedown", (e) => {
@@ -142,7 +110,7 @@ function createWidget(count: number): HTMLElement {
     dragStartPos = { x: e.clientX, y: e.clientY };
     const rect = host.getBoundingClientRect();
     widgetStartPos = { x: rect.left, y: rect.top };
-    button.style.cursor = "grabbing";
+    button.classList.add("dragging");
   });
 
   // Click (only if not dragging)
@@ -187,7 +155,7 @@ function setupDragHandlers(): void {
       isDragging = false;
       const button = shadowRoot?.querySelector("button");
       if (button) {
-        button.style.cursor = "grab";
+        button.classList.remove("dragging");
       }
       // Save position using edge-based logic
       savePosition(widgetElement.getBoundingClientRect());
@@ -199,18 +167,22 @@ function setupDragHandlers(): void {
 }
 
 function setupAutoHide(): void {
-  mouseLeaveHandler = () => {
+  // Use mouseout with relatedTarget check for reliable detection
+  mouseLeaveHandler = (e: MouseEvent) => {
+    // Only trigger when mouse actually leaves the document (relatedTarget is null)
+    if (e.relatedTarget !== null) return;
+
     if (hideTimeoutId) {
       clearTimeout(hideTimeoutId);
     }
     hideTimeoutId = window.setTimeout(() => {
       const button = shadowRoot?.querySelector("button");
       if (button && !isDragging) {
+        isAutoHidden = true; // Mark as auto-hidden immediately
         button.classList.add("hiding");
         setTimeout(() => {
           button.classList.remove("hiding");
           button.classList.add("hidden");
-          isAutoHidden = true; // Mark as auto-hidden
         }, 300);
       }
     }, HIDE_DELAY_MS);
@@ -230,7 +202,7 @@ function setupAutoHide(): void {
     }
   };
 
-  document.addEventListener("mouseleave", mouseLeaveHandler);
+  document.addEventListener("mouseout", mouseLeaveHandler);
   document.addEventListener("mouseenter", mouseEnterHandler);
 }
 
@@ -244,7 +216,7 @@ function cleanupEventListeners(): void {
     mouseUpHandler = null;
   }
   if (mouseLeaveHandler) {
-    document.removeEventListener("mouseleave", mouseLeaveHandler);
+    document.removeEventListener("mouseout", mouseLeaveHandler);
     mouseLeaveHandler = null;
   }
   if (mouseEnterHandler) {
@@ -299,16 +271,15 @@ export function updateFloatingWidgetCount(count: number): void {
   const button = shadowRoot.querySelector("button");
   if (!button) return;
 
-  // Find existing badge (second span, if exists)
-  const spans = button.querySelectorAll("span");
-  const existingBadge = spans.length > 1 ? (spans[1] as HTMLElement) : null;
+  // Find existing badge
+  const existingBadge = button.querySelector(".badge");
 
   if (count > 0) {
     if (existingBadge) {
       existingBadge.textContent = String(count);
     } else {
       const badge = document.createElement("span");
-      badge.setAttribute("style", styles.floatingWidget.badge);
+      badge.className = "badge";
       badge.textContent = String(count);
       button.appendChild(badge);
     }
