@@ -12,6 +12,7 @@ export interface CreateRecordPayload {
 export interface LinkVodPayload {
   vodId: string;
   streamerId: string;
+  streamId: string; // Required for precise matching
   startedAt: string; // ISO 8601
   durationSeconds: number;
 }

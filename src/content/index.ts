@@ -10,7 +10,7 @@ import {
   linkVod,
   updateMemo,
 } from "./messaging";
-import { getPlayerTimestamp, getStreamerNameFromPage, getVodMetadata } from "./player";
+import { getPlayerTimestamp, getStreamerNameFromPage } from "./player";
 import {
   hideIndicator,
   hideMemoInput,
@@ -162,38 +162,20 @@ async function handlePageChange(pageInfo: PageInfo): Promise<void> {
     injectRecordButton(handleRecord);
     injectChatButton(handleRecord);
 
-    // Auto-link VODs
+    // Auto-link VODs (requires stream_id from API)
     if (pageInfo.type === "vod" && pageInfo.vodId) {
       try {
-        // Try to get VOD metadata from API first
-        let vodId = pageInfo.vodId;
-        let streamerId: string | null = null;
-        let startedAt: string | null = null;
-        let durationSeconds: number | null = null;
-
+        // Get VOD metadata from API (required for stream_id)
         const apiVodMeta = await getVodMetadataFromApi(pageInfo.vodId);
-        if (apiVodMeta) {
-          vodId = apiVodMeta.vodId;
-          streamerId = apiVodMeta.streamerId;
-          startedAt = apiVodMeta.startedAt.toISOString();
-          durationSeconds = apiVodMeta.durationSeconds;
-        } else {
-          // Fallback to DOM extraction
-          const domVodMeta = getVodMetadata();
-          if (domVodMeta) {
-            vodId = domVodMeta.vodId;
-            streamerId = domVodMeta.streamerId;
-            startedAt = domVodMeta.startedAt;
-            durationSeconds = domVodMeta.durationSeconds;
-          }
-        }
 
-        if (streamerId) {
+        // Only link if we have stream_id from API (no DOM fallback for linking)
+        if (apiVodMeta?.streamId) {
           const linked = await linkVod({
-            vodId,
-            streamerId,
-            startedAt: startedAt ?? new Date().toISOString(),
-            durationSeconds: durationSeconds ?? 0,
+            vodId: apiVodMeta.vodId,
+            streamerId: apiVodMeta.streamerId,
+            streamId: apiVodMeta.streamId,
+            startedAt: apiVodMeta.startedAt.toISOString(),
+            durationSeconds: apiVodMeta.durationSeconds,
           });
           if (linked.length > 0) {
             showToast(`Linked ${linked.length} record(s) to this VOD`, "info");
