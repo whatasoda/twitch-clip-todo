@@ -1,5 +1,6 @@
 import type { Record } from "../core/record";
 import type { LiveStreamInfo, StreamerInfo, VodMetadata } from "../services/twitch.service";
+import type { DiscoveryResult } from "../services/vod-discovery.service";
 import type {
   CreateRecordPayload,
   LinkVodPayload,
@@ -34,6 +35,13 @@ export async function getCurrentStream(login: string): Promise<LiveStreamInfo | 
   });
 }
 
+export async function getCurrentStreamCached(login: string): Promise<LiveStreamInfo | null> {
+  return sendMessage<LiveStreamInfo | null>({
+    type: "TWITCH_GET_CURRENT_STREAM_CACHED",
+    payload: { login },
+  });
+}
+
 export async function createRecord(payload: CreateRecordPayload): Promise<Record> {
   return sendMessage<Record>({ type: "CREATE_RECORD", payload });
 }
@@ -52,4 +60,11 @@ export async function linkVod(payload: LinkVodPayload): Promise<Record[]> {
 
 export async function deleteRecord(id: string): Promise<void> {
   await sendMessage<null>({ type: "DELETE_RECORD", payload: { id } });
+}
+
+export async function discoverVodForStreamer(streamerId: string): Promise<DiscoveryResult> {
+  return sendMessage<DiscoveryResult>({
+    type: "DISCOVER_VOD_FOR_STREAMER",
+    payload: { streamerId },
+  });
 }

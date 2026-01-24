@@ -33,6 +33,9 @@ export type MessageToBackground =
   | { type: "TWITCH_LOGOUT" }
   | { type: "TWITCH_GET_STREAMER_INFO"; payload: { login: string } }
   | { type: "TWITCH_GET_VOD_METADATA"; payload: { vodId: string } }
-  | { type: "TWITCH_GET_CURRENT_STREAM"; payload: { login: string } };
+  | { type: "TWITCH_GET_CURRENT_STREAM"; payload: { login: string } }
+  | { type: "TWITCH_GET_CURRENT_STREAM_CACHED"; payload: { login: string } }
+  | { type: "RUN_VOD_DISCOVERY" }
+  | { type: "DISCOVER_VOD_FOR_STREAMER"; payload: { streamerId: string } };
 
 export type MessageResponse<T> = { success: true; data: T } | { success: false; error: string };

@@ -3,7 +3,7 @@ import { getCurrentPageInfo, setupNavigationListener } from "./detector";
 import {
   createRecord,
   deleteRecord,
-  getCurrentStream,
+  getCurrentStreamCached,
   getPendingCount,
   getStreamerInfo,
   getVodMetadataFromApi,
@@ -41,7 +41,7 @@ async function handleRecord(): Promise<void> {
   if (pageInfo.type === "live" && loginFromUrl) {
     // Live: Calculate elapsed time from API's started_at and capture broadcastId
     try {
-      const streamInfo = await getCurrentStream(loginFromUrl);
+      const streamInfo = await getCurrentStreamCached(loginFromUrl);
       if (streamInfo) {
         broadcastId = streamInfo.streamId;
         if (streamInfo.startedAt) {

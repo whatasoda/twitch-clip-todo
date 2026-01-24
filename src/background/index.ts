@@ -5,6 +5,7 @@ import {
   createLinkingService,
   createRecordService,
   createTwitchService,
+  createVodDiscoveryService,
 } from "../services";
 import type { MessageToBackground } from "../shared/types";
 import { handleMessage } from "./message-handler";
@@ -35,12 +36,21 @@ if (!twitchService) {
   );
 }
 
-// Initialize cleanup on startup
+// Initialize VOD discovery service
+const vodDiscoveryService = createVodDiscoveryService({
+  recordService,
+  linkingService,
+  twitchService,
+  alarms: chromeAPI.alarms,
+});
+
+// Initialize services on startup
 cleanupService.initialize();
+vodDiscoveryService.initialize();
 
 // Message handler
 chrome.runtime.onMessage.addListener((message: MessageToBackground, _sender, sendResponse) => {
-  handleMessage(message, { recordService, linkingService, twitchService })
+  handleMessage(message, { recordService, linkingService, twitchService, vodDiscoveryService })
     .then(sendResponse)
     .catch((error) =>
       sendResponse({
