@@ -7,6 +7,7 @@ let widgetElement: HTMLElement | null = null;
 let shadowRoot: ShadowRoot | null = null;
 let hideTimeoutId: number | null = null;
 let isDragging = false;
+let didDrag = false; // True if mouse actually moved during drag
 let dragStartPos = { x: 0, y: 0 };
 let widgetStartPos = { x: 0, y: 0 };
 let currentOnClick: (() => void) | null = null;
@@ -100,21 +101,18 @@ function createWidget(count: number): HTMLElement {
   // Drag start
   button.addEventListener("mousedown", (e) => {
     isDragging = true;
+    didDrag = false;
     dragStartPos = { x: e.clientX, y: e.clientY };
     const rect = host.getBoundingClientRect();
     widgetStartPos = { x: rect.left, y: rect.top };
     button.style.cursor = "grabbing";
-    e.preventDefault();
   });
 
   // Click (only if not dragging)
   button.addEventListener("click", (e) => {
-    e.preventDefault();
     e.stopPropagation();
-    // Only trigger click if we didn't drag
-    const dragDistance =
-      Math.abs(e.clientX - dragStartPos.x) + Math.abs(e.clientY - dragStartPos.y);
-    if (dragDistance < 5 && currentOnClick) {
+    // Only trigger click if we didn't actually drag
+    if (!didDrag && currentOnClick) {
       currentOnClick();
     }
   });
@@ -130,6 +128,11 @@ function setupDragHandlers(): void {
 
     const deltaX = e.clientX - dragStartPos.x;
     const deltaY = e.clientY - dragStartPos.y;
+
+    // Mark as dragged if moved more than 3 pixels
+    if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+      didDrag = true;
+    }
 
     let newX = widgetStartPos.x + deltaX;
     let newY = widgetStartPos.y + deltaY;
