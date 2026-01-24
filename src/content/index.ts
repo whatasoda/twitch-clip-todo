@@ -177,14 +177,20 @@ async function handlePageChange(pageInfo: PageInfo): Promise<void> {
             showToast(`Linked ${linked.length} record(s) to this VOD`, "info");
           }
         }
+
+        // Show floating widget for VOD using API-fetched streamerId
+        if (apiVodMeta?.streamerId) {
+          const count = await getPendingCount(apiVodMeta.streamerId);
+          showFloatingWidget(count, openPopup);
+        }
       } catch (error) {
         console.error("[Twitch Clip Todo] VOD linking failed:", error);
       }
     }
   }
 
-  // Show floating widget on all Twitch pages
-  if (pageInfo.streamerId) {
+  // Show floating widget for non-VOD pages (live, channel)
+  if (pageInfo.type !== "vod" && pageInfo.streamerId) {
     try {
       const count = await getPendingCount(pageInfo.streamerId);
       showFloatingWidget(count, openPopup);
