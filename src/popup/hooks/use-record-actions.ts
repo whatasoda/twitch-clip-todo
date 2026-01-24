@@ -1,5 +1,6 @@
 import type { Record } from "../../core/record";
 import { buildClipCreationUrl } from "../../core/twitch";
+import type { DiscoveryResult } from "../../services/vod-discovery.service";
 import type { MessageResponse } from "../../shared/types";
 
 export function useRecordActions() {
@@ -45,10 +46,20 @@ export function useRecordActions() {
     await markCompleted(record.id);
   }
 
+  async function discoverVodForStreamer(streamerId: string): Promise<DiscoveryResult> {
+    const response = await chrome.runtime.sendMessage<unknown, MessageResponse<DiscoveryResult>>({
+      type: "DISCOVER_VOD_FOR_STREAMER",
+      payload: { streamerId },
+    });
+    if (!response.success) throw new Error(response.error);
+    return response.data;
+  }
+
   return {
     updateMemo,
     markCompleted,
     deleteRecord,
     openClipCreation,
+    discoverVodForStreamer,
   };
 }

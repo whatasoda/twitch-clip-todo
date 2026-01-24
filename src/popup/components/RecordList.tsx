@@ -10,6 +10,7 @@ interface RecordListProps {
   onUpdateMemo: (id: string, memo: string) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
   onOpenClip: (record: Record) => Promise<unknown>;
+  onFindVod: (streamerId: string) => Promise<unknown>;
 }
 
 export function RecordList(props: RecordListProps) {
@@ -30,10 +31,12 @@ export function RecordList(props: RecordListProps) {
           {(group) => (
             <StreamerGroup
               streamerName={group.streamerName}
+              streamerId={group.streamerId}
               records={group.records}
               onUpdateMemo={props.onUpdateMemo}
               onDelete={props.onDelete}
               onOpenClip={props.onOpenClip}
+              onFindVod={props.onFindVod}
             />
           )}
         </For>

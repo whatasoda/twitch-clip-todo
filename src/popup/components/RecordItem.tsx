@@ -1,4 +1,4 @@
-import { Check, Trash2, Video } from "lucide-solid";
+import { Check, Search, Trash2, Video } from "lucide-solid";
 import { createSignal, Show } from "solid-js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ interface RecordItemProps {
   onUpdateMemo: (id: string, memo: string) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
   onOpenClip: (record: Record) => Promise<unknown>;
+  onFindVod: (streamerId: string) => Promise<unknown>;
 }
 
 export function RecordItem(props: RecordItemProps) {
@@ -50,8 +51,18 @@ export function RecordItem(props: RecordItemProps) {
     }
   };
 
+  const handleFindVod = async () => {
+    setIsLoading(true);
+    try {
+      await props.onFindVod(props.record.streamerId);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const isCompleted = () => props.record.completedAt !== null;
   const canCreateClip = () => props.record.vodId !== null || props.record.broadcastId !== null;
+  const canFindVod = () => props.record.broadcastId !== null && props.record.vodId === null;
 
   return (
     <Box
@@ -86,9 +97,19 @@ export function RecordItem(props: RecordItemProps) {
               </Show>
             </Button>
           </Show>
-          <Show when={!canCreateClip()}>
+          <Show when={!canCreateClip() && canFindVod()}>
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={handleFindVod}
+              disabled={isLoading()}
+            >
+              <Search size={14} /> Find VOD
+            </Button>
+          </Show>
+          <Show when={!canCreateClip() && !canFindVod()}>
             <Badge variant="outline" size="sm">
-              Not linked
+              No broadcast ID
             </Badge>
           </Show>
           <IconButton
