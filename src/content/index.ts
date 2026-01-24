@@ -26,9 +26,9 @@ import {
 
 let pendingRecordId: string | null = null;
 
-function openSidePanel(): void {
-  chrome.runtime.sendMessage({ type: "OPEN_SIDE_PANEL" }).catch((error) => {
-    console.error("[Twitch Clip Todo] Failed to open side panel:", error);
+function openPopup(): void {
+  chrome.runtime.sendMessage({ type: "OPEN_POPUP" }).catch((error) => {
+    console.error("[Twitch Clip Todo] Failed to open popup:", error);
   });
 }
 
@@ -142,11 +142,7 @@ async function refreshFloatingWidget(): Promise<void> {
 
   try {
     const count = await getPendingCount(pageInfo.streamerId);
-    if (count > 0) {
-      updateFloatingWidgetCount(count);
-    } else {
-      hideFloatingWidget();
-    }
+    updateFloatingWidgetCount(count);
   } catch (error) {
     console.error("[Twitch Clip Todo] Failed to refresh floating widget:", error);
   }
@@ -187,13 +183,11 @@ async function handlePageChange(pageInfo: PageInfo): Promise<void> {
     }
   }
 
-  // Show floating widget on all Twitch pages if there are pending records
+  // Show floating widget on all Twitch pages
   if (pageInfo.streamerId) {
     try {
       const count = await getPendingCount(pageInfo.streamerId);
-      if (count > 0) {
-        showFloatingWidget(count, openSidePanel);
-      }
+      showFloatingWidget(count, openPopup);
     } catch (error) {
       console.error("[Twitch Clip Todo] Failed to get pending count:", error);
     }

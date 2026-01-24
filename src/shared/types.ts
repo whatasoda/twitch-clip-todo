@@ -25,8 +25,8 @@ export type MessageToBackground =
   | { type: "GET_RECORDS"; payload?: { streamerId?: string } }
   | { type: "LINK_VOD"; payload: LinkVodPayload }
   | { type: "GET_PENDING_COUNT"; payload: { streamerId: string } }
-  // Side Panel
-  | { type: "OPEN_SIDE_PANEL" }
+  // Popup
+  | { type: "OPEN_POPUP" }
   // Twitch API messages
   | { type: "TWITCH_GET_AUTH_STATUS" }
   | { type: "TWITCH_START_DEVICE_AUTH" }

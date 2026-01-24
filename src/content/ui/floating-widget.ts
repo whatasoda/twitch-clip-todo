@@ -2,6 +2,15 @@ import { BOOKMARK_ICON_OUTLINED, styles } from "./styles";
 
 const STORAGE_KEY = "twitch-clip-todo-widget-position";
 const HIDE_DELAY_MS = 3000;
+const WIDGET_WIDTH = 60;
+const WIDGET_HEIGHT = 40;
+
+interface WidgetPosition {
+  horizontal: "left" | "right";
+  horizontalOffset: number;
+  vertical: "top" | "bottom";
+  verticalOffset: number;
+}
 
 let widgetElement: HTMLElement | null = null;
 let shadowRoot: ShadowRoot | null = null;
@@ -11,6 +20,7 @@ let didDrag = false; // True if mouse actually moved during drag
 let dragStartPos = { x: 0, y: 0 };
 let widgetStartPos = { x: 0, y: 0 };
 let currentOnClick: (() => void) | null = null;
+let isAutoHidden = false; // True after auto-hide, prevents re-show on mouseenter
 
 // Event handler references for cleanup
 let mouseMoveHandler: ((e: MouseEvent) => void) | null = null;
@@ -22,22 +32,46 @@ function loadPosition(): { x: number; y: number } {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      const pos = JSON.parse(saved);
-      // Ensure position is within viewport
+      const pos: WidgetPosition = JSON.parse(saved);
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Convert edge-based offset to absolute coordinates
+      const x =
+        pos.horizontal === "left"
+          ? pos.horizontalOffset
+          : vw - pos.horizontalOffset - WIDGET_WIDTH;
+      const y =
+        pos.vertical === "top"
+          ? pos.verticalOffset
+          : vh - pos.verticalOffset - WIDGET_HEIGHT;
+
       return {
-        x: Math.min(Math.max(0, pos.x), window.innerWidth - 60),
-        y: Math.min(Math.max(0, pos.y), window.innerHeight - 40),
+        x: Math.max(0, Math.min(x, vw - WIDGET_WIDTH)),
+        y: Math.max(0, Math.min(y, vh - WIDGET_HEIGHT)),
       };
     }
   } catch {
-    // Ignore parse errors
+    // Ignore parse errors or old format
   }
   // Default: top-right area
   return { x: window.innerWidth - 80, y: 100 };
 }
 
-function savePosition(pos: { x: number; y: number }): void {
+function savePosition(rect: DOMRect): void {
   try {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // Determine which edge is closer
+    const pos: WidgetPosition = {
+      horizontal: rect.left < vw - rect.right ? "left" : "right",
+      horizontalOffset:
+        rect.left < vw - rect.right ? rect.left : vw - rect.right,
+      vertical: rect.top < vh - rect.bottom ? "top" : "bottom",
+      verticalOffset: rect.top < vh - rect.bottom ? rect.top : vh - rect.bottom,
+    };
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(pos));
   } catch {
     // Ignore storage errors
@@ -77,11 +111,14 @@ function createWidget(count: number): HTMLElement {
   const button = document.createElement("button");
   button.className = "widget";
   button.setAttribute("style", styles.floatingWidget.base);
-  button.setAttribute("aria-label", `${count} pending clips - Click to open side panel`);
+  button.setAttribute(
+    "aria-label",
+    count > 0 ? `${count} pending clips - Click to open popup` : "Clip Todo - Click to open popup",
+  );
   button.title = "Click to open Clip Todo panel\nDrag to move";
   button.innerHTML = `
     <span style="display: flex; align-items: center;">${BOOKMARK_ICON_OUTLINED}</span>
-    <span style="${styles.floatingWidget.badge}">${count}</span>
+    ${count > 0 ? `<span style="${styles.floatingWidget.badge}">${count}</span>` : ""}
   `;
 
   // Hover effects
@@ -152,11 +189,8 @@ function setupDragHandlers(): void {
       if (button) {
         button.style.cursor = "grab";
       }
-      // Save position
-      savePosition({
-        x: parseInt(widgetElement.style.left, 10),
-        y: parseInt(widgetElement.style.top, 10),
-      });
+      // Save position using edge-based logic
+      savePosition(widgetElement.getBoundingClientRect());
     }
   };
 
@@ -176,6 +210,7 @@ function setupAutoHide(): void {
         setTimeout(() => {
           button.classList.remove("hiding");
           button.classList.add("hidden");
+          isAutoHidden = true; // Mark as auto-hidden
         }, 300);
       }
     }, HIDE_DELAY_MS);
@@ -186,6 +221,9 @@ function setupAutoHide(): void {
       clearTimeout(hideTimeoutId);
       hideTimeoutId = null;
     }
+    // Don't re-show if auto-hidden
+    if (isAutoHidden) return;
+
     const button = shadowRoot?.querySelector("button");
     if (button) {
       button.classList.remove("hidden", "hiding");
@@ -252,18 +290,34 @@ export function hideFloatingWidget(): void {
   shadowRoot = null;
   currentOnClick = null;
   isDragging = false;
+  isAutoHidden = false;
 }
 
 export function updateFloatingWidgetCount(count: number): void {
   if (!shadowRoot) return;
 
-  const badge = shadowRoot.querySelector("button > span:last-child") as HTMLElement;
-  if (badge) {
-    badge.textContent = String(count);
+  const button = shadowRoot.querySelector("button");
+  if (!button) return;
+
+  // Find existing badge (second span, if exists)
+  const spans = button.querySelectorAll("span");
+  const existingBadge = spans.length > 1 ? (spans[1] as HTMLElement) : null;
+
+  if (count > 0) {
+    if (existingBadge) {
+      existingBadge.textContent = String(count);
+    } else {
+      const badge = document.createElement("span");
+      badge.setAttribute("style", styles.floatingWidget.badge);
+      badge.textContent = String(count);
+      button.appendChild(badge);
+    }
+  } else {
+    existingBadge?.remove();
   }
 
-  const button = shadowRoot.querySelector("button");
-  if (button) {
-    button.setAttribute("aria-label", `${count} pending clips - Click to open side panel`);
-  }
+  button.setAttribute(
+    "aria-label",
+    count > 0 ? `${count} pending clips - Click to open popup` : "Clip Todo - Click to open popup",
+  );
 }
