@@ -177,4 +177,38 @@ export const styles = {
       font-size: 12px;
     `,
   },
+  // Channel header button (next to follow button)
+  channelButton: {
+    base: `
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 30px;
+      padding: 0 10px;
+      border: none;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+    `,
+    hover: `background: rgba(255, 255, 255, 0.25);`,
+    badge: `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 9px;
+      background: #9147ff;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+    `,
+  },
 };
