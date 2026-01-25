@@ -244,10 +244,6 @@ export function hideFloatingWidget(): void {
   widgetManager.hide();
 }
 
-export function updateFloatingWidgetCount(count: number): void {
-  widgetManager.updateCount(count);
-}
-
 export function showFloatingWidgetError(onRetry: () => void): void {
   widgetManager.showError(onRetry);
 }
