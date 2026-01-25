@@ -44,8 +44,6 @@ export function createDomPlayerTimestampProvider(): Provider<TimestampResult> {
       if (!timeElement?.textContent) return null;
 
       const seconds = parseTimeString(timeElement.textContent);
-      if (seconds === null || seconds < 0) return null;
-
       return { seconds, source: "dom-player" };
     },
   };
