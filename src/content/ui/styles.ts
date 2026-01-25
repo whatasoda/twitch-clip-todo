@@ -1,9 +1,12 @@
+import { token } from "../../../styled-system-content/tokens";
+
 // Outlined bookmark icon (shared between player and chat buttons)
 export const BOOKMARK_ICON_OUTLINED = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M5 3h10a1 1 0 0 1 1 1v14l-6-3.5-6 3.5V4a1 1 0 0 1 1-1z"/>
 </svg>`;
 
 // Inline styles for content script UI (Shadow DOM)
+// Uses Panda CSS tokens for consistent color values
 export const styles = {
   // Legacy button style (keeping for reference)
   button: {
@@ -15,13 +18,13 @@ export const styles = {
       height: 36px;
       border: none;
       border-radius: 4px;
-      background: #9147ff;
+      background: ${token("colors.twitch")};
       color: white;
       cursor: pointer;
       transition: background 0.2s;
       font-size: 16px;
     `,
-    hover: `background: #772ce8;`,
+    hover: `background: ${token("colors.twitchHover")};`,
     active: `transform: scale(0.95);`,
   },
   // Twitch-native player button style
@@ -56,7 +59,7 @@ export const styles = {
       border: none;
       border-radius: 15px;
       background: transparent;
-      color: #efeff1;
+      color: ${token("colors.twitchText")};
       cursor: pointer;
       transition: background 0.1s ease;
     `,
@@ -77,15 +80,15 @@ export const styles = {
       bottom: 80px;
       right: 20px;
       z-index: 10000;
-      background: #18181b;
-      border: 1px solid #3d3d3d;
+      background: ${token("colors.twitchDark")};
+      border: 1px solid ${token("colors.twitchBorder")};
       border-radius: 8px;
       padding: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     `,
     title: `
-      color: #efeff1;
+      color: ${token("colors.twitchText")};
       font-size: 14px;
       font-weight: 600;
       margin-bottom: 8px;
@@ -93,10 +96,10 @@ export const styles = {
     input: `
       width: 320px;
       padding: 8px 12px;
-      border: 1px solid #3d3d3d;
+      border: 1px solid ${token("colors.twitchBorder")};
       border-radius: 4px;
-      background: #0e0e10;
-      color: #efeff1;
+      background: ${token("colors.twitchInput")};
+      color: ${token("colors.twitchText")};
       font-size: 14px;
       outline: none;
     `,
@@ -110,17 +113,17 @@ export const styles = {
       padding: 6px 12px;
       border: none;
       border-radius: 4px;
-      background: #9147ff;
+      background: ${token("colors.twitch")};
       color: white;
       cursor: pointer;
       font-size: 12px;
     `,
     cancelButton: `
       padding: 6px 12px;
-      border: 1px solid #3d3d3d;
+      border: 1px solid ${token("colors.twitchBorder")};
       border-radius: 4px;
       background: transparent;
-      color: #efeff1;
+      color: ${token("colors.twitchText")};
       cursor: pointer;
       font-size: 12px;
     `,
@@ -138,9 +141,9 @@ export const styles = {
       color: white;
       animation: slideIn 0.3s ease;
     `,
-    success: `background: #00a67e;`,
-    error: `background: #d9534f;`,
-    info: `background: #9147ff;`,
+    success: `background: ${token("colors.success")};`,
+    error: `background: ${token("colors.error")};`,
+    info: `background: ${token("colors.twitch")};`,
   },
   indicator: {
     container: `
@@ -152,8 +155,8 @@ export const styles = {
       align-items: center;
       gap: 8px;
       padding: 8px 12px;
-      background: #18181b;
-      border: 1px solid #9147ff;
+      background: ${token("colors.twitchDark")};
+      border: 1px solid ${token("colors.twitch")};
       border-radius: 20px;
       cursor: pointer;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -167,49 +170,14 @@ export const styles = {
       height: 20px;
       padding: 0 6px;
       border-radius: 10px;
-      background: #9147ff;
+      background: ${token("colors.twitch")};
       color: white;
       font-size: 12px;
       font-weight: bold;
     `,
     text: `
-      color: #efeff1;
+      color: ${token("colors.twitchText")};
       font-size: 12px;
-    `,
-  },
-  // Floating widget for pending clips count
-  floatingWidget: {
-    base: `
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      height: 36px;
-      padding: 0 12px;
-      border: none;
-      border-radius: 18px;
-      background: rgba(145, 71, 255, 0.85);
-      color: white;
-      cursor: grab;
-      transition: background 0.1s ease, transform 0.1s ease;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      user-select: none;
-    `,
-    badge: `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 20px;
-      height: 20px;
-      padding: 0 6px;
-      border-radius: 10px;
-      background: white;
-      color: #9147ff;
-      font-size: 12px;
-      font-weight: bold;
     `,
   },
 };
