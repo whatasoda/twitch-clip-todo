@@ -10,7 +10,6 @@ import {
   showFloatingWidget,
   showFloatingWidgetError,
   showToast,
-  updateFloatingWidgetCount,
 } from "./ui";
 
 export interface PageHandlerDeps {
@@ -97,7 +96,7 @@ export function createPageHandler(deps: PageHandlerDeps) {
     const tryRefresh = async (): Promise<void> => {
       try {
         const count = await getPendingCount(streamerId);
-        updateFloatingWidgetCount(count);
+        showFloatingWidget(count, onOpenPopup);
       } catch (error) {
         console.error("[Twitch Clip Todo] Failed to refresh floating widget:", error);
         showFloatingWidgetError(tryRefresh);

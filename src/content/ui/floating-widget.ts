@@ -153,6 +153,10 @@ class FloatingWidgetManager {
   }
 
   private setupBehaviors(): void {
+    this.setupCommonBehaviors(() => this.onClick?.());
+  }
+
+  private setupCommonBehaviors(onClick: () => void): void {
     if (!this.host || !this.shadow || !this.eventManager) return;
 
     const button = this.shadow.querySelector("button");
@@ -178,9 +182,7 @@ class FloatingWidgetManager {
         onDragCancel: () => {
           button.classList.remove("dragging");
         },
-        onClick: () => {
-          this.onClick?.();
-        },
+        onClick,
       },
       this.eventManager,
     );
@@ -226,56 +228,7 @@ class FloatingWidgetManager {
   }
 
   private setupErrorBehaviors(onRetry: () => void): void {
-    if (!this.host || !this.shadow || !this.eventManager) return;
-
-    const button = this.shadow.querySelector("button");
-    if (!button) return;
-
-    // Setup draggable behavior with retry on click
-    this.draggable = createDraggable(
-      {
-        element: this.host,
-        handle: button,
-        threshold: 3,
-        bounds: () => ({ width: window.innerWidth, height: window.innerHeight }),
-        onDragStart: () => {
-          button.classList.add("dragging");
-          this.autoHide?.reset();
-        },
-        onDragEnd: () => {
-          button.classList.remove("dragging");
-          if (this.host) {
-            this.positionPersistence.save(this.host.getBoundingClientRect());
-          }
-        },
-        onDragCancel: () => {
-          button.classList.remove("dragging");
-        },
-        onClick: () => {
-          onRetry();
-        },
-      },
-      this.eventManager,
-    );
-
-    // Setup auto-hide behavior
-    this.autoHide = createAutoHide(
-      {
-        delay: HIDE_DELAY_MS,
-        isDragging: () => this.draggable?.isDragging ?? false,
-        onHideStart: () => {
-          button.classList.add("hiding");
-        },
-        onHidden: () => {
-          button.classList.remove("hiding");
-          button.classList.add("hidden");
-        },
-        onShow: () => {
-          button.classList.remove("hidden", "hiding");
-        },
-      },
-      this.eventManager,
-    );
+    this.setupCommonBehaviors(onRetry);
   }
 }
 

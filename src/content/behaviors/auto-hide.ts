@@ -21,6 +21,7 @@ export function createAutoHide(
   const { delay = 3000, isDragging, onHideStart, onHidden, onShow } = options;
 
   let timeoutId: number | null = null;
+  let hiddenTimeoutId: number | null = null;
   let isHidden = false;
 
   function handleMouseLeave(e: MouseEvent): void {
@@ -39,7 +40,8 @@ export function createAutoHide(
       onHideStart?.();
 
       // Delayed callback for when fully hidden
-      setTimeout(() => {
+      hiddenTimeoutId = window.setTimeout(() => {
+        hiddenTimeoutId = null;
         onHidden?.();
       }, 300);
     }, delay);
@@ -49,6 +51,10 @@ export function createAutoHide(
     if (timeoutId) {
       clearTimeout(timeoutId);
       timeoutId = null;
+    }
+    if (hiddenTimeoutId) {
+      clearTimeout(hiddenTimeoutId);
+      hiddenTimeoutId = null;
     }
 
     // Reset hidden state if auto-hidden
@@ -71,12 +77,20 @@ export function createAutoHide(
         clearTimeout(timeoutId);
         timeoutId = null;
       }
+      if (hiddenTimeoutId) {
+        clearTimeout(hiddenTimeoutId);
+        hiddenTimeoutId = null;
+      }
       isHidden = false;
     },
     destroy() {
       if (timeoutId) {
         clearTimeout(timeoutId);
         timeoutId = null;
+      }
+      if (hiddenTimeoutId) {
+        clearTimeout(hiddenTimeoutId);
+        hiddenTimeoutId = null;
       }
       // Note: document events are cleaned up via eventManager.cleanup()
     },
