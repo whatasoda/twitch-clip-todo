@@ -1,3 +1,13 @@
+import {
+  type AutoHideBehavior,
+  createAutoHide,
+  createDraggable,
+  createEventManager,
+  createPositionPersistence,
+  type DraggableBehavior,
+  type EventManager,
+  type PositionPersistence,
+} from "../behaviors";
 import widgetStyles from "./floating-widget.css?raw";
 import { createShadowHost, injectStyles } from "./shadow-dom";
 import { BOOKMARK_ICON_OUTLINED } from "./styles";
@@ -7,67 +17,36 @@ const HIDE_DELAY_MS = 3000;
 const WIDGET_WIDTH = 60;
 const WIDGET_HEIGHT = 40;
 
-interface WidgetPosition {
-  horizontal: "left" | "right";
-  horizontalOffset: number;
-  vertical: "top" | "bottom";
-  verticalOffset: number;
-}
-
-interface DragState {
-  isDragging: boolean;
-  didDrag: boolean;
-  startPos: { x: number; y: number };
-  widgetStartPos: { x: number; y: number };
-}
-
-interface AutoHideState {
-  timeoutId: number | null;
-  isHidden: boolean;
-}
-
-interface EventHandlers {
-  mouseMove: ((e: MouseEvent) => void) | null;
-  mouseUp: (() => void) | null;
-  mouseLeave: ((e: MouseEvent) => void) | null;
-  mouseEnter: (() => void) | null;
-}
-
 class FloatingWidgetManager {
   private host: HTMLElement | null = null;
   private shadow: ShadowRoot | null = null;
   private onClick: (() => void) | null = null;
 
-  private dragState: DragState = {
-    isDragging: false,
-    didDrag: false,
-    startPos: { x: 0, y: 0 },
-    widgetStartPos: { x: 0, y: 0 },
-  };
+  private eventManager: EventManager | null = null;
+  private draggable: DraggableBehavior | null = null;
+  private autoHide: AutoHideBehavior | null = null;
+  private positionPersistence: PositionPersistence;
 
-  private autoHideState: AutoHideState = {
-    timeoutId: null,
-    isHidden: false,
-  };
-
-  private eventHandlers: EventHandlers = {
-    mouseMove: null,
-    mouseUp: null,
-    mouseLeave: null,
-    mouseEnter: null,
-  };
+  constructor() {
+    this.positionPersistence = createPositionPersistence({
+      storageKey: STORAGE_KEY,
+      elementSize: { width: WIDGET_WIDTH, height: WIDGET_HEIGHT },
+      defaultPosition: { x: window.innerWidth - 80, y: 100 },
+    });
+  }
 
   show(count: number, onClick: () => void): void {
     // Clean up existing widget
     this.hide();
 
     this.onClick = onClick;
+    this.eventManager = createEventManager();
 
     const widget = this.createWidget(count);
     this.host = widget;
 
     // Set initial position
-    const pos = this.loadPosition();
+    const pos = this.positionPersistence.load();
     widget.style.cssText = `
       position: fixed;
       left: ${pos.x}px;
@@ -77,24 +56,21 @@ class FloatingWidgetManager {
 
     document.body.appendChild(widget);
 
-    this.setupDragHandlers();
-    this.setupAutoHide();
+    this.setupBehaviors();
   }
 
   hide(): void {
-    if (this.autoHideState.timeoutId) {
-      clearTimeout(this.autoHideState.timeoutId);
-      this.autoHideState.timeoutId = null;
-    }
-
-    this.cleanupEventListeners();
+    this.autoHide?.destroy();
+    this.draggable?.destroy();
+    this.eventManager?.cleanup();
 
     this.host?.remove();
     this.host = null;
     this.shadow = null;
     this.onClick = null;
-    this.dragState.isDragging = false;
-    this.autoHideState.isHidden = false;
+    this.eventManager = null;
+    this.draggable = null;
+    this.autoHide = null;
   }
 
   updateCount(count: number): void {
@@ -127,53 +103,6 @@ class FloatingWidgetManager {
     );
   }
 
-  private loadPosition(): { x: number; y: number } {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const pos: WidgetPosition = JSON.parse(saved);
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-
-        // Convert edge-based offset to absolute coordinates
-        const x =
-          pos.horizontal === "left"
-            ? pos.horizontalOffset
-            : vw - pos.horizontalOffset - WIDGET_WIDTH;
-        const y =
-          pos.vertical === "top" ? pos.verticalOffset : vh - pos.verticalOffset - WIDGET_HEIGHT;
-
-        return {
-          x: Math.max(0, Math.min(x, vw - WIDGET_WIDTH)),
-          y: Math.max(0, Math.min(y, vh - WIDGET_HEIGHT)),
-        };
-      }
-    } catch {
-      // Ignore parse errors or old format
-    }
-    // Default: top-right area
-    return { x: window.innerWidth - 80, y: 100 };
-  }
-
-  private savePosition(rect: DOMRect): void {
-    try {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-
-      // Determine which edge is closer
-      const pos: WidgetPosition = {
-        horizontal: rect.left < vw - rect.right ? "left" : "right",
-        horizontalOffset: rect.left < vw - rect.right ? rect.left : vw - rect.right,
-        vertical: rect.top < vh - rect.bottom ? "top" : "bottom",
-        verticalOffset: rect.top < vh - rect.bottom ? rect.top : vh - rect.bottom,
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(pos));
-    } catch {
-      // Ignore storage errors
-    }
-  }
-
   private createWidget(count: number): HTMLElement {
     const { host, shadow } = createShadowHost("twitch-clip-todo-floating-widget");
     this.shadow = shadow;
@@ -195,126 +124,58 @@ class FloatingWidgetManager {
       ${count > 0 ? `<span class="badge">${count}</span>` : ""}
     `;
 
-    // Drag start
-    button.addEventListener("mousedown", (e) => {
-      this.dragState.isDragging = true;
-      this.dragState.didDrag = false;
-      this.dragState.startPos = { x: e.clientX, y: e.clientY };
-      const rect = host.getBoundingClientRect();
-      this.dragState.widgetStartPos = { x: rect.left, y: rect.top };
-      button.classList.add("dragging");
-    });
-
-    // Click (only if not dragging)
-    button.addEventListener("click", (e) => {
-      e.stopPropagation();
-      // Only trigger click if we didn't actually drag
-      if (!this.dragState.didDrag && this.onClick) {
-        this.onClick();
-      }
-    });
-
     shadow.appendChild(button);
 
     return host;
   }
 
-  private setupDragHandlers(): void {
-    this.eventHandlers.mouseMove = (e: MouseEvent) => {
-      if (!this.dragState.isDragging || !this.host) return;
+  private setupBehaviors(): void {
+    if (!this.host || !this.shadow || !this.eventManager) return;
 
-      const deltaX = e.clientX - this.dragState.startPos.x;
-      const deltaY = e.clientY - this.dragState.startPos.y;
+    const button = this.shadow.querySelector("button");
+    if (!button) return;
 
-      // Mark as dragged if moved more than 3 pixels
-      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
-        this.dragState.didDrag = true;
-      }
-
-      let newX = this.dragState.widgetStartPos.x + deltaX;
-      let newY = this.dragState.widgetStartPos.y + deltaY;
-
-      // Keep within viewport
-      newX = Math.max(0, Math.min(newX, window.innerWidth - 60));
-      newY = Math.max(0, Math.min(newY, window.innerHeight - 40));
-
-      this.host.style.left = `${newX}px`;
-      this.host.style.top = `${newY}px`;
-    };
-
-    this.eventHandlers.mouseUp = () => {
-      if (this.dragState.isDragging && this.host) {
-        this.dragState.isDragging = false;
-        const button = this.shadow?.querySelector("button");
-        if (button) {
+    // Setup draggable behavior
+    this.draggable = createDraggable(
+      {
+        element: this.host,
+        handle: button,
+        threshold: 3,
+        bounds: () => ({ width: window.innerWidth, height: window.innerHeight }),
+        onDragStart: () => {
+          button.classList.add("dragging");
+        },
+        onDragEnd: () => {
           button.classList.remove("dragging");
-        }
-        // Save position using edge-based logic
-        this.savePosition(this.host.getBoundingClientRect());
-      }
-    };
+          if (this.host) {
+            this.positionPersistence.save(this.host.getBoundingClientRect());
+          }
+        },
+        onClick: () => {
+          this.onClick?.();
+        },
+      },
+      this.eventManager,
+    );
 
-    document.addEventListener("mousemove", this.eventHandlers.mouseMove);
-    document.addEventListener("mouseup", this.eventHandlers.mouseUp);
-  }
-
-  private setupAutoHide(): void {
-    // Use mouseout with relatedTarget check for reliable detection
-    this.eventHandlers.mouseLeave = (e: MouseEvent) => {
-      // Only trigger when mouse actually leaves the document (relatedTarget is null)
-      if (e.relatedTarget !== null) return;
-
-      if (this.autoHideState.timeoutId) {
-        clearTimeout(this.autoHideState.timeoutId);
-      }
-      this.autoHideState.timeoutId = window.setTimeout(() => {
-        const button = this.shadow?.querySelector("button");
-        if (button && !this.dragState.isDragging) {
-          this.autoHideState.isHidden = true; // Mark as auto-hidden immediately
+    // Setup auto-hide behavior
+    this.autoHide = createAutoHide(
+      {
+        delay: HIDE_DELAY_MS,
+        isDragging: () => this.draggable?.isDragging ?? false,
+        onHideStart: () => {
           button.classList.add("hiding");
-          setTimeout(() => {
-            button.classList.remove("hiding");
-            button.classList.add("hidden");
-          }, 300);
-        }
-      }, HIDE_DELAY_MS);
-    };
-
-    this.eventHandlers.mouseEnter = () => {
-      if (this.autoHideState.timeoutId) {
-        clearTimeout(this.autoHideState.timeoutId);
-        this.autoHideState.timeoutId = null;
-      }
-      // Don't re-show if auto-hidden
-      if (this.autoHideState.isHidden) return;
-
-      const button = this.shadow?.querySelector("button");
-      if (button) {
-        button.classList.remove("hidden", "hiding");
-      }
-    };
-
-    document.addEventListener("mouseout", this.eventHandlers.mouseLeave);
-    document.addEventListener("mouseenter", this.eventHandlers.mouseEnter);
-  }
-
-  private cleanupEventListeners(): void {
-    if (this.eventHandlers.mouseMove) {
-      document.removeEventListener("mousemove", this.eventHandlers.mouseMove);
-      this.eventHandlers.mouseMove = null;
-    }
-    if (this.eventHandlers.mouseUp) {
-      document.removeEventListener("mouseup", this.eventHandlers.mouseUp);
-      this.eventHandlers.mouseUp = null;
-    }
-    if (this.eventHandlers.mouseLeave) {
-      document.removeEventListener("mouseout", this.eventHandlers.mouseLeave);
-      this.eventHandlers.mouseLeave = null;
-    }
-    if (this.eventHandlers.mouseEnter) {
-      document.removeEventListener("mouseenter", this.eventHandlers.mouseEnter);
-      this.eventHandlers.mouseEnter = null;
-    }
+        },
+        onHidden: () => {
+          button.classList.remove("hiding");
+          button.classList.add("hidden");
+        },
+        onShow: () => {
+          button.classList.remove("hidden", "hiding");
+        },
+      },
+      this.eventManager,
+    );
   }
 }
 
