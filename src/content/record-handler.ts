@@ -1,12 +1,11 @@
 import type { PageInfo } from "../core/twitch";
+import { createRecord, deleteRecord, updateMemo } from "./messaging";
 import {
-  createRecord,
-  deleteRecord,
-  getCurrentStreamCached,
-  getStreamerInfo,
-  updateMemo,
-} from "./messaging";
-import { getPlayerTimestamp, getStreamerNameFromPage } from "./player";
+  getBroadcastId,
+  getLiveTimestamp,
+  getStreamerWithFallback,
+  getVodTimestamp,
+} from "./providers";
 import { showMemoInput, showToast } from "./ui";
 
 let pendingRecordId: string | null = null;
@@ -28,29 +27,22 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
 
     const loginFromUrl = pageInfo.streamerId;
 
-    // Get timestamp and broadcastId - different strategies for live vs VOD
+    // Get timestamp and broadcastId using provider chain
     let timestamp: number | null = null;
     let broadcastId: string | null = null;
 
     if (pageInfo.type === "live" && loginFromUrl) {
-      // Live: Calculate elapsed time from API's started_at and capture broadcastId
-      try {
-        const streamInfo = await getCurrentStreamCached(loginFromUrl);
-        if (streamInfo) {
-          broadcastId = streamInfo.streamId;
-          if (streamInfo.startedAt) {
-            const elapsedMs = Date.now() - new Date(streamInfo.startedAt).getTime();
-            timestamp = Math.floor(elapsedMs / 1000);
-          }
-        }
-      } catch {
-        // API failed, will try DOM fallback
-      }
-    }
-
-    // DOM fallback (primary method for VOD, fallback for live)
-    if (timestamp === null) {
-      timestamp = getPlayerTimestamp();
+      // Live: Get timestamp and broadcast ID from API with DOM fallback
+      const [timestampResult, broadcastIdResult] = await Promise.all([
+        getLiveTimestamp(loginFromUrl),
+        getBroadcastId(loginFromUrl),
+      ]);
+      timestamp = timestampResult?.seconds ?? null;
+      broadcastId = broadcastIdResult?.broadcastId ?? null;
+    } else {
+      // VOD: Get timestamp from DOM
+      const timestampResult = await getVodTimestamp();
+      timestamp = timestampResult?.seconds ?? null;
     }
 
     if (timestamp === null) {
@@ -58,34 +50,18 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
       return;
     }
 
-    // Try to get streamer name from API first, then fallback to DOM
-    let streamerName: string | null = null;
+    // Get streamer info using provider chain
+    const streamerResult = await getStreamerWithFallback(loginFromUrl);
 
-    if (loginFromUrl) {
-      try {
-        const apiInfo = await getStreamerInfo(loginFromUrl);
-        if (apiInfo) {
-          streamerName = apiInfo.displayName;
-        }
-      } catch {
-        // API failed, will use DOM fallback
-      }
-    }
-
-    // DOM fallback
-    if (!streamerName) {
-      streamerName = getStreamerNameFromPage();
-    }
-
-    if (!streamerName) {
+    if (!streamerResult) {
       showToast("Could not get streamer name", "error");
       return;
     }
 
     try {
       const record = await createRecord({
-        streamerId: loginFromUrl ?? streamerName.toLowerCase(),
-        streamerName,
+        streamerId: loginFromUrl ?? streamerResult.login,
+        streamerName: streamerResult.displayName,
         timestampSeconds: timestamp,
         sourceType: pageInfo.type as "live" | "vod",
         vodId: pageInfo.vodId,
