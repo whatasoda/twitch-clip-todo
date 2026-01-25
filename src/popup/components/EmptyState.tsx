@@ -1,4 +1,6 @@
 import { Pin } from "lucide-solid";
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Center, VStack } from "../../../styled-system/jsx";
 
 export function EmptyState() {
@@ -7,14 +9,10 @@ export function EmptyState() {
       <VStack gap="4" textAlign="center">
         <Pin size={48} color="var(--colors-fg-muted)" />
         <Box fontSize="lg" fontWeight="semibold">
-          No recorded moments yet
+          {t(MSG.POPUP_EMPTY_TITLE)}
         </Box>
         <Box fontSize="sm" color="fg.muted">
-          Visit a Twitch stream and press{" "}
-          <Box as="kbd" fontFamily="mono" bg="bg.muted" px="1" borderRadius="sm" display="inline">
-            Alt+Shift+C
-          </Box>{" "}
-          or click the pin button to record a moment.
+          {t(MSG.POPUP_EMPTY_DESCRIPTION)}
         </Box>
       </VStack>
     </Center>

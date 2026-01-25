@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Twitch Clips Todo",
+  "name": "__MSG_extName__",
   "version": "0.1.0",
-  "description": "Bookmark moments during Twitch streams for later clip creation",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq1nY7Zuubpx3JWRsulHPKXY003LjayfaVUKY0Raa3M2cbWzKAIxj61dmLLTBxZZrv8MEStrrING7FwS6bQXyDFUH/fQDAMBd838/AbA7NMHbA2JnnGPLUcKxBq7ZZxlPDTf5p88ZJZxzgoPAEP0S3VOKjB1LQ0PehPqhQ5mF/19jieQGMCnaVUgGnd8reXIxGi2wplavORIVOC66C1vapchqONm6FpPL2B91poPIwKQG5LGIVbFfevYThcTeW7Eh80KJiSPjP9KSmniNzwbx4iJ2JdLucfDO2W4s6XimoquANa3Qsw2jh6sm66xCJFqZRLDHvZzQPo5ENlN6upH20QIDAQAB",
   "permissions": [
     "tabs",
@@ -30,7 +31,7 @@
       "suggested_key": {
         "default": "Alt+Shift+C"
       },
-      "description": "Record current moment"
+      "description": "__MSG_manifest_commandRecordMoment__"
     }
   },
   "action": {

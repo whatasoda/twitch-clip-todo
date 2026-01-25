@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Flex, HStack } from "../../../styled-system/jsx";
 import type { Record } from "../../core/record";
 import { formatTimestamp } from "../../core/twitch";
@@ -32,7 +34,7 @@ export function RecordItem(props: RecordItemProps) {
   };
 
   const handleDelete = async () => {
-    if (confirm("Delete this record?")) {
+    if (confirm(t(MSG.RECORD_DELETE_CONFIRM))) {
       setIsLoading(true);
       try {
         await props.onDelete(props.record.id);
@@ -89,26 +91,26 @@ export function RecordItem(props: RecordItemProps) {
                 when={isCompleted()}
                 fallback={
                   <>
-                    <Video size={14} /> Create Clip
+                    <Video size={14} /> {t(MSG.RECORD_CREATE_CLIP)}
                   </>
                 }
               >
-                <Check size={14} /> Clipped
+                <Check size={14} /> {t(MSG.RECORD_CLIPPED)}
               </Show>
             </Button>
           </Show>
           <Show when={!canCreateClip() && canFindVod()}>
             <Button size="xs" variant="outline" onClick={handleFindVod} disabled={isLoading()}>
-              <Search size={14} /> Find VOD
+              <Search size={14} /> {t(MSG.RECORD_FIND_VOD)}
             </Button>
           </Show>
           <Show when={!canCreateClip() && !canFindVod()}>
             <Badge variant="outline" size="sm">
-              No broadcast ID
+              {t(MSG.RECORD_NO_BROADCAST_ID)}
             </Badge>
           </Show>
           <IconButton
-            aria-label="Delete record"
+            aria-label={t(MSG.RECORD_DELETE_LABEL)}
             variant="ghost"
             size="xs"
             onClick={handleDelete}
@@ -129,7 +131,7 @@ export function RecordItem(props: RecordItemProps) {
             fontStyle={memo() ? "normal" : "italic"}
             onClick={() => setIsEditing(true)}
           >
-            {memo() || "Click to add memo..."}
+            {memo() || t(MSG.RECORD_ADD_MEMO_PLACEHOLDER)}
           </Box>
         }
       >
@@ -142,17 +144,17 @@ export function RecordItem(props: RecordItemProps) {
               if (e.key === "Enter") handleSaveMemo();
               if (e.key === "Escape") setIsEditing(false);
             }}
-            placeholder="Enter memo..."
+            placeholder={t(MSG.RECORD_ENTER_MEMO_PLACEHOLDER)}
           />
           <Button size="sm" onClick={handleSaveMemo} disabled={isLoading()}>
-            Save
+            {t(MSG.COMMON_SAVE)}
           </Button>
         </HStack>
       </Show>
 
       <HStack gap="2" mt="2">
         <Box fontSize="xs" color="fg.muted">
-          {props.record.sourceType === "live" ? "Live" : "VOD"}
+          {props.record.sourceType === "live" ? t(MSG.POPUP_BADGE_LIVE) : t(MSG.POPUP_BADGE_VOD)}
         </Box>
         <Box fontSize="xs" color="fg.muted">
           {new Date(props.record.createdAt).toLocaleString()}

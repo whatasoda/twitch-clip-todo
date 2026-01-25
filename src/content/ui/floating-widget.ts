@@ -1,3 +1,5 @@
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import {
   type AutoHideBehavior,
   createAutoHide,
@@ -107,11 +109,9 @@ class FloatingWidgetManager {
     button.className = "widget";
     button.setAttribute(
       "aria-label",
-      count > 0
-        ? `${count} pending clips - Click to open popup`
-        : "Clip Todo - Click to open popup",
+      count > 0 ? t(MSG.WIDGET_PENDING_CLIPS_LABEL, String(count)) : t(MSG.WIDGET_DEFAULT_LABEL),
     );
-    button.title = "Click to open Clip Todo panel\nDrag to move";
+    button.title = t(MSG.WIDGET_TOOLTIP);
     button.innerHTML = `
       <span class="icon">${BOOKMARK_ICON_OUTLINED}</span>
       ${count > 0 ? `<span class="badge">${count}</span>` : ""}
@@ -185,8 +185,8 @@ class FloatingWidgetManager {
 
     const button = document.createElement("button");
     button.className = "widget error";
-    button.setAttribute("aria-label", "Connection error - Click to retry");
-    button.title = "接続エラー\n拡張機能アイコンをクリック";
+    button.setAttribute("aria-label", t(MSG.WIDGET_ERROR_LABEL));
+    button.title = t(MSG.WIDGET_ERROR_TOOLTIP);
     button.innerHTML = `
       <span class="icon">${RETRY_ICON}</span>
       <span class="error-badge">!</span>

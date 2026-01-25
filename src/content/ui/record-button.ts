@@ -1,3 +1,5 @@
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import { createShadowHost } from "./shadow-dom";
 import { BOOKMARK_ICON_OUTLINED, styles } from "./styles";
 
@@ -10,11 +12,11 @@ function createRecordButton(onClick: () => void): HTMLElement {
 
   const button = document.createElement("button");
   button.setAttribute("style", styles.playerButton.base);
-  button.setAttribute("aria-label", "Clip Later (Alt+Shift+C)");
-  button.title = "Record moment (Alt+Shift+C)";
+  button.setAttribute("aria-label", t(MSG.BUTTON_CLIP_LATER_LABEL));
+  button.title = t(MSG.BUTTON_RECORD_MOMENT_TITLE);
   button.innerHTML = `
     <span style="display: flex; align-items: center;">${BOOKMARK_ICON_OUTLINED}</span>
-    <span>Clip Later</span>
+    <span>${t(MSG.BUTTON_CLIP_LATER)}</span>
   `;
 
   button.addEventListener("mouseenter", () => {

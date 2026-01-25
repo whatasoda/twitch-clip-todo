@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 dist-dev/
+website/doc_build/
 
 # Generated files
 styled-system/

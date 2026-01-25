@@ -1,6 +1,8 @@
 import { ExternalLink, LogIn, LogOut, X } from "lucide-solid";
 import { Match, Show, Switch } from "solid-js";
 import { Button } from "@/components/ui/button";
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Flex, styled } from "../../../styled-system/jsx";
 import { useAuth } from "../hooks/use-auth";
 
@@ -32,7 +34,7 @@ export function AuthButton() {
         <Match when={isAuthenticated()}>
           <Button size="xs" variant="ghost" onClick={logout} disabled={isLoading()}>
             <LogOut size={14} />
-            Disconnect
+            {t(MSG.AUTH_DISCONNECT)}
           </Button>
         </Match>
 
@@ -40,17 +42,17 @@ export function AuthButton() {
         <Match when={status() === "pending" && deviceAuth()}>
           <Flex direction="column" gap="2" p="2" bg="gray.2" borderRadius="md">
             <Box fontSize="xs" color="gray.11">
-              Enter this code at twitch.tv/activate:
+              {t(MSG.AUTH_ENTER_CODE)}
             </Box>
             <Code>{deviceAuth()?.userCode}</Code>
             <Flex gap="2">
               <Button size="xs" variant="outline" onClick={openVerificationUrl}>
                 <ExternalLink size={12} />
-                Open Link
+                {t(MSG.AUTH_OPEN_LINK)}
               </Button>
               <Button size="xs" variant="ghost" onClick={cancelAuth}>
                 <X size={12} />
-                Cancel
+                {t(MSG.COMMON_CANCEL)}
               </Button>
             </Flex>
           </Flex>
@@ -60,7 +62,7 @@ export function AuthButton() {
         <Match when={status() === "pending"}>
           <Button size="xs" variant="outline" disabled>
             <LogIn size={14} />
-            Loading...
+            {t(MSG.COMMON_LOADING)}
           </Button>
         </Match>
 
@@ -68,7 +70,7 @@ export function AuthButton() {
         <Match when={true}>
           <Button size="xs" variant="outline" onClick={startAuth} disabled={isLoading()}>
             <LogIn size={14} />
-            Connect Twitch
+            {t(MSG.AUTH_CONNECT_TWITCH)}
           </Button>
         </Match>
       </Switch>

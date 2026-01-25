@@ -2,6 +2,8 @@ import { ChevronDown, ChevronRight, Search } from "lucide-solid";
 import { createSignal, For, Show } from "solid-js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Flex, HStack } from "../../../styled-system/jsx";
 import type { Record } from "../../core/record";
 import { RecordItem } from "./RecordItem";
@@ -50,7 +52,7 @@ export function StreamerGroup(props: StreamerGroupProps) {
         <HStack gap="2">
           <Show when={unlinkedCount() > 0}>
             <Button size="xs" variant="ghost" onClick={handleFindVods} disabled={isLoading()}>
-              <Search size={14} /> Find VODs
+              <Search size={14} /> {t(MSG.RECORD_FIND_VODS)}
             </Button>
           </Show>
           <Show when={pendingCount() > 0}>

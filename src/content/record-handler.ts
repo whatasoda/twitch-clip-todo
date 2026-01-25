@@ -1,3 +1,5 @@
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import type { PageInfo } from "../core/twitch";
 import { createRecord, deleteRecord, updateMemo } from "./messaging";
 import {
@@ -21,7 +23,7 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
   async function handleRecord(): Promise<void> {
     const pageInfo = getCurrentPageInfo();
     if (pageInfo.type !== "live" && pageInfo.type !== "vod") {
-      showToast("現在は利用できません。チャンネルページから保存済みのTODOを確認できます。", "info");
+      showToast(t(MSG.TOAST_NOT_AVAILABLE), "info");
       return;
     }
 
@@ -46,7 +48,7 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
     }
 
     if (timestamp === null) {
-      showToast("Could not get timestamp", "error");
+      showToast(t(MSG.TOAST_NO_TIMESTAMP), "error");
       return;
     }
 
@@ -54,7 +56,7 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
     const streamerResult = await getStreamerWithFallback(loginFromUrl);
 
     if (!streamerResult) {
-      showToast("Could not get streamer name", "error");
+      showToast(t(MSG.TOAST_NO_STREAMER_NAME), "error");
       return;
     }
 
@@ -74,7 +76,7 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
           if (memo && pendingRecordId) {
             await updateMemo(pendingRecordId, memo);
           }
-          showToast("Moment recorded!", "success");
+          showToast(t(MSG.TOAST_MOMENT_RECORDED), "success");
           pendingRecordId = null;
           onRecordComplete();
         },
@@ -83,10 +85,10 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
           if (pendingRecordId) {
             try {
               await deleteRecord(pendingRecordId);
-              showToast("Recording cancelled", "info");
+              showToast(t(MSG.TOAST_RECORDING_CANCELLED), "info");
             } catch (error) {
               console.error("[Twitch Clip Todo] Failed to delete record:", error);
-              showToast("Failed to cancel recording", "error");
+              showToast(t(MSG.TOAST_CANCEL_FAILED), "error");
             }
           }
           pendingRecordId = null;
@@ -94,7 +96,7 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
         },
       );
     } catch (error) {
-      showToast("Failed to record moment", "error");
+      showToast(t(MSG.TOAST_RECORD_FAILED), "error");
       console.error("[Twitch Clip Todo]", error);
     }
   }

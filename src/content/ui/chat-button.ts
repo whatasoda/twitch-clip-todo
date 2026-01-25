@@ -1,3 +1,5 @@
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import { createShadowHost } from "./shadow-dom";
 import { BOOKMARK_ICON_OUTLINED, styles } from "./styles";
 
@@ -10,8 +12,8 @@ function createChatButton(onClick: () => void): HTMLElement {
 
   const button = document.createElement("button");
   button.setAttribute("style", styles.chatButton.base);
-  button.setAttribute("aria-label", "Clip Later (Alt+Shift+C)");
-  button.title = "Record moment (Alt+Shift+C)";
+  button.setAttribute("aria-label", t(MSG.BUTTON_CLIP_LATER_LABEL));
+  button.title = t(MSG.BUTTON_RECORD_MOMENT_TITLE);
   button.innerHTML = BOOKMARK_ICON_OUTLINED;
 
   button.addEventListener("mouseenter", () => {

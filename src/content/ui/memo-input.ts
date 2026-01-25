@@ -1,3 +1,5 @@
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import { createShadowHost } from "./shadow-dom";
 import { styles } from "./styles";
 
@@ -21,23 +23,23 @@ export function showMemoInput(
 
   const title = document.createElement("div");
   title.setAttribute("style", styles.memoInput.title);
-  title.textContent = "後でクリップを取れるようメモをしよう";
+  title.textContent = t(MSG.MEMO_TITLE);
 
   const input = document.createElement("input");
   input.setAttribute("style", styles.memoInput.input);
   input.type = "text";
-  input.placeholder = "どんな瞬間でしたか？";
+  input.placeholder = t(MSG.MEMO_PLACEHOLDER);
 
   const buttonRow = document.createElement("div");
   buttonRow.setAttribute("style", styles.memoInput.buttonRow);
 
   const cancelBtn = document.createElement("button");
   cancelBtn.setAttribute("style", styles.memoInput.cancelButton);
-  cancelBtn.textContent = "Cancel";
+  cancelBtn.textContent = t(MSG.COMMON_CANCEL);
 
   const saveBtn = document.createElement("button");
   saveBtn.setAttribute("style", styles.memoInput.saveButton);
-  saveBtn.textContent = "Save";
+  saveBtn.textContent = t(MSG.COMMON_SAVE);
 
   // IME composition state
   let isComposing = false;
@@ -52,7 +54,7 @@ export function showMemoInput(
   const handleCancel = async () => {
     saveBtn.disabled = true;
     cancelBtn.disabled = true;
-    cancelBtn.textContent = "Cancelling...";
+    cancelBtn.textContent = t(MSG.MEMO_CANCELLING);
     await onCancel();
     hideMemoInput();
   };

@@ -1,0 +1,191 @@
+{
+  "extName": {
+    "message": "Twitch Clips Todo",
+    "description": "拡張機能名"
+  },
+  "extDescription": {
+    "message": "Twitch配信中の瞬間をブックマークして後でクリップ作成",
+    "description": "拡張機能の説明"
+  },
+  "manifest_commandRecordMoment": {
+    "message": "現在の瞬間を記録",
+    "description": "キーボードショートカットの説明"
+  },
+  "common_loading": {
+    "message": "読み込み中...",
+    "description": "読み込み状態のテキスト"
+  },
+  "common_error": {
+    "message": "エラー:",
+    "description": "エラーの接頭辞"
+  },
+  "common_cancel": {
+    "message": "キャンセル",
+    "description": "キャンセルボタン"
+  },
+  "common_save": {
+    "message": "保存",
+    "description": "保存ボタン"
+  },
+  "popup_defaultTitle": {
+    "message": "Twitch Clip Todo",
+    "description": "デフォルトのポップアップタイトル"
+  },
+  "popup_watchingStreamer": {
+    "message": "視聴中: $1",
+    "description": "ライブ配信視聴時のヘッダー",
+    "placeholders": {
+      "streamer": { "content": "$1" }
+    }
+  },
+  "popup_vodLabel": {
+    "message": "VOD: $1",
+    "description": "VOD視聴時のヘッダー",
+    "placeholders": {
+      "vodId": { "content": "$1" }
+    }
+  },
+  "popup_badgeLive": {
+    "message": "ライブ",
+    "description": "ライブバッジ"
+  },
+  "popup_badgeVod": {
+    "message": "VOD",
+    "description": "VODバッジ"
+  },
+  "popup_emptyTitle": {
+    "message": "まだ記録がありません",
+    "description": "空状態のタイトル"
+  },
+  "popup_emptyDescription": {
+    "message": "Twitch配信ページで Alt+Shift+C を押すか、ピンボタンをクリックして瞬間を記録しましょう。",
+    "description": "空状態の説明"
+  },
+  "auth_disconnect": {
+    "message": "切断",
+    "description": "切断ボタン"
+  },
+  "auth_enterCode": {
+    "message": "twitch.tv/activate でこのコードを入力:",
+    "description": "デバイスコードの説明"
+  },
+  "auth_openLink": {
+    "message": "リンクを開く",
+    "description": "認証リンクを開くボタン"
+  },
+  "auth_connectTwitch": {
+    "message": "Twitchに接続",
+    "description": "Twitch接続ボタン"
+  },
+  "record_deleteConfirm": {
+    "message": "この記録を削除しますか？",
+    "description": "削除確認メッセージ"
+  },
+  "record_createClip": {
+    "message": "クリップ作成",
+    "description": "クリップ作成ボタン"
+  },
+  "record_clipped": {
+    "message": "作成済み",
+    "description": "クリップ作成済み状態"
+  },
+  "record_findVod": {
+    "message": "VODを探す",
+    "description": "VOD検索ボタン"
+  },
+  "record_findVods": {
+    "message": "VODを探す",
+    "description": "VOD検索ボタン（複数）"
+  },
+  "record_noBroadcastId": {
+    "message": "配信IDなし",
+    "description": "配信IDがない場合のバッジ"
+  },
+  "record_deleteLabel": {
+    "message": "記録を削除",
+    "description": "削除ボタンのaria-label"
+  },
+  "record_addMemoPlaceholder": {
+    "message": "クリックしてメモを追加...",
+    "description": "メモが空の時のプレースホルダー"
+  },
+  "record_enterMemoPlaceholder": {
+    "message": "メモを入力...",
+    "description": "メモ入力のプレースホルダー"
+  },
+  "widget_pendingClipsLabel": {
+    "message": "$1 件のクリップ待ち - クリックでパネルを開く",
+    "description": "ウィジェットのラベル（件数付き）",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "widget_defaultLabel": {
+    "message": "Clip Todo - クリックでパネルを開く",
+    "description": "ウィジェットのデフォルトラベル"
+  },
+  "widget_tooltip": {
+    "message": "クリックでパネルを開く\nドラッグで移動",
+    "description": "ウィジェットのツールチップ"
+  },
+  "widget_errorLabel": {
+    "message": "接続エラー - クリックで再試行",
+    "description": "エラーウィジェットのaria-label"
+  },
+  "widget_errorTooltip": {
+    "message": "接続エラー\n拡張機能アイコンをクリック",
+    "description": "エラーウィジェットのツールチップ"
+  },
+  "memo_title": {
+    "message": "後でクリップを取れるようメモをしよう",
+    "description": "メモ入力のタイトル"
+  },
+  "memo_placeholder": {
+    "message": "どんな瞬間でしたか？",
+    "description": "メモ入力のプレースホルダー"
+  },
+  "memo_cancelling": {
+    "message": "キャンセル中...",
+    "description": "キャンセル処理中のテキスト"
+  },
+  "button_clipLaterLabel": {
+    "message": "後でクリップ (Alt+Shift+C)",
+    "description": "記録ボタンのaria-label"
+  },
+  "button_recordMomentTitle": {
+    "message": "瞬間を記録 (Alt+Shift+C)",
+    "description": "記録ボタンのtitle"
+  },
+  "button_clipLater": {
+    "message": "後でクリップ",
+    "description": "記録ボタンのテキスト"
+  },
+  "toast_notAvailable": {
+    "message": "現在は利用できません。チャンネルページから保存済みのTODOを確認できます。",
+    "description": "記録できない時のトースト"
+  },
+  "toast_noTimestamp": {
+    "message": "タイムスタンプを取得できませんでした",
+    "description": "タイムスタンプ取得失敗時のトースト"
+  },
+  "toast_noStreamerName": {
+    "message": "配信者名を取得できませんでした",
+    "description": "配信者名取得失敗時のトースト"
+  },
+  "toast_momentRecorded": {
+    "message": "記録しました！",
+    "description": "記録成功時のトースト"
+  },
+  "toast_recordingCancelled": {
+    "message": "記録をキャンセルしました",
+    "description": "記録キャンセル時のトースト"
+  },
+  "toast_cancelFailed": {
+    "message": "キャンセルに失敗しました",
+    "description": "キャンセル失敗時のトースト"
+  },
+  "toast_recordFailed": {
+    "message": "記録に失敗しました",
+    "description": "記録失敗時のトースト"
+  }
+}

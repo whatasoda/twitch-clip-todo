@@ -1,4 +1,6 @@
 import { Badge } from "@/components/ui/badge";
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Flex, HStack } from "../../../styled-system/jsx";
 import type { PageInfo } from "../../core/twitch";
 import { AuthButton } from "./AuthButton";
@@ -10,12 +12,12 @@ interface HeaderProps {
 export function Header(props: HeaderProps) {
   const title = () => {
     if (props.pageInfo.type === "live" && props.pageInfo.streamerId) {
-      return `Watching: ${props.pageInfo.streamerId}`;
+      return t(MSG.POPUP_WATCHING_STREAMER, props.pageInfo.streamerId);
     }
     if (props.pageInfo.type === "vod" && props.pageInfo.vodId) {
-      return `VOD: ${props.pageInfo.vodId}`;
+      return t(MSG.POPUP_VOD_LABEL, props.pageInfo.vodId);
     }
-    return "Twitch Clip Todo";
+    return t(MSG.POPUP_DEFAULT_TITLE);
   };
 
   return (
@@ -27,7 +29,7 @@ export function Header(props: HeaderProps) {
           </Box>
           {props.pageInfo.type !== "other" && (
             <Badge variant={props.pageInfo.type === "live" ? "solid" : "outline"}>
-              {props.pageInfo.type === "live" ? "Live" : "VOD"}
+              {props.pageInfo.type === "live" ? t(MSG.POPUP_BADGE_LIVE) : t(MSG.POPUP_BADGE_VOD)}
             </Badge>
           )}
         </HStack>

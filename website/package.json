@@ -1,0 +1,15 @@
+{
+  "name": "twitch-clip-todo-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "rspress dev",
+    "build": "rspress build",
+    "preview": "rspress preview"
+  },
+  "devDependencies": {
+    "rspress": "^1.47.0",
+    "typescript": "^5.9.3"
+  }
+}

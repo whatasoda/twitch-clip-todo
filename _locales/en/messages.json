@@ -1,0 +1,191 @@
+{
+  "extName": {
+    "message": "Twitch Clips Todo",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Bookmark moments during Twitch streams for later clip creation",
+    "description": "Extension description"
+  },
+  "manifest_commandRecordMoment": {
+    "message": "Record current moment",
+    "description": "Keyboard shortcut description"
+  },
+  "common_loading": {
+    "message": "Loading...",
+    "description": "Loading state text"
+  },
+  "common_error": {
+    "message": "Error:",
+    "description": "Error prefix"
+  },
+  "common_cancel": {
+    "message": "Cancel",
+    "description": "Cancel button text"
+  },
+  "common_save": {
+    "message": "Save",
+    "description": "Save button text"
+  },
+  "popup_defaultTitle": {
+    "message": "Twitch Clip Todo",
+    "description": "Default popup title"
+  },
+  "popup_watchingStreamer": {
+    "message": "Watching: $1",
+    "description": "Header when viewing live stream",
+    "placeholders": {
+      "streamer": { "content": "$1" }
+    }
+  },
+  "popup_vodLabel": {
+    "message": "VOD: $1",
+    "description": "Header when viewing VOD",
+    "placeholders": {
+      "vodId": { "content": "$1" }
+    }
+  },
+  "popup_badgeLive": {
+    "message": "Live",
+    "description": "Live badge text"
+  },
+  "popup_badgeVod": {
+    "message": "VOD",
+    "description": "VOD badge text"
+  },
+  "popup_emptyTitle": {
+    "message": "No recorded moments yet",
+    "description": "Empty state title"
+  },
+  "popup_emptyDescription": {
+    "message": "Visit a Twitch stream and press Alt+Shift+C or click the pin button to record a moment.",
+    "description": "Empty state description"
+  },
+  "auth_disconnect": {
+    "message": "Disconnect",
+    "description": "Disconnect button text"
+  },
+  "auth_enterCode": {
+    "message": "Enter this code at twitch.tv/activate:",
+    "description": "Device code instruction"
+  },
+  "auth_openLink": {
+    "message": "Open Link",
+    "description": "Open verification link button"
+  },
+  "auth_connectTwitch": {
+    "message": "Connect Twitch",
+    "description": "Connect Twitch button"
+  },
+  "record_deleteConfirm": {
+    "message": "Delete this record?",
+    "description": "Delete confirmation message"
+  },
+  "record_createClip": {
+    "message": "Create Clip",
+    "description": "Create clip button"
+  },
+  "record_clipped": {
+    "message": "Clipped",
+    "description": "Clipped state button"
+  },
+  "record_findVod": {
+    "message": "Find VOD",
+    "description": "Find VOD button"
+  },
+  "record_findVods": {
+    "message": "Find VODs",
+    "description": "Find VODs button (plural)"
+  },
+  "record_noBroadcastId": {
+    "message": "No broadcast ID",
+    "description": "No broadcast ID badge"
+  },
+  "record_deleteLabel": {
+    "message": "Delete record",
+    "description": "Delete button aria-label"
+  },
+  "record_addMemoPlaceholder": {
+    "message": "Click to add memo...",
+    "description": "Memo placeholder when empty"
+  },
+  "record_enterMemoPlaceholder": {
+    "message": "Enter memo...",
+    "description": "Memo input placeholder"
+  },
+  "widget_pendingClipsLabel": {
+    "message": "$1 pending clips - Click to open popup",
+    "description": "Widget label with pending count",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "widget_defaultLabel": {
+    "message": "Clip Todo - Click to open popup",
+    "description": "Widget default label"
+  },
+  "widget_tooltip": {
+    "message": "Click to open Clip Todo panel\nDrag to move",
+    "description": "Widget tooltip"
+  },
+  "widget_errorLabel": {
+    "message": "Connection error - Click to retry",
+    "description": "Error widget aria-label"
+  },
+  "widget_errorTooltip": {
+    "message": "Connection error\nClick extension icon",
+    "description": "Error widget tooltip"
+  },
+  "memo_title": {
+    "message": "Add a memo for your clip",
+    "description": "Memo input title"
+  },
+  "memo_placeholder": {
+    "message": "What happened?",
+    "description": "Memo input placeholder"
+  },
+  "memo_cancelling": {
+    "message": "Cancelling...",
+    "description": "Cancel in progress text"
+  },
+  "button_clipLaterLabel": {
+    "message": "Clip Later (Alt+Shift+C)",
+    "description": "Record button aria-label"
+  },
+  "button_recordMomentTitle": {
+    "message": "Record moment (Alt+Shift+C)",
+    "description": "Record button title"
+  },
+  "button_clipLater": {
+    "message": "Clip Later",
+    "description": "Record button text"
+  },
+  "toast_notAvailable": {
+    "message": "Not available here. Check your saved TODOs from the channel page.",
+    "description": "Toast when recording not available"
+  },
+  "toast_noTimestamp": {
+    "message": "Could not get timestamp",
+    "description": "Toast when timestamp unavailable"
+  },
+  "toast_noStreamerName": {
+    "message": "Could not get streamer name",
+    "description": "Toast when streamer name unavailable"
+  },
+  "toast_momentRecorded": {
+    "message": "Moment recorded!",
+    "description": "Toast on successful recording"
+  },
+  "toast_recordingCancelled": {
+    "message": "Recording cancelled",
+    "description": "Toast when recording cancelled"
+  },
+  "toast_cancelFailed": {
+    "message": "Failed to cancel recording",
+    "description": "Toast when cancel fails"
+  },
+  "toast_recordFailed": {
+    "message": "Failed to record moment",
+    "description": "Toast when recording fails"
+  }
+}
