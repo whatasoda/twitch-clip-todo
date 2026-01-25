@@ -1,3 +1,11 @@
+import { token } from "../../../styled-system-content/tokens";
+
+/**
+ * Generate CSS string for the floating widget.
+ * Uses Panda CSS tokens for consistent color values.
+ */
+export function getWidgetStyles(): string {
+  return `
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -27,7 +35,7 @@
   padding: 0 12px;
   border: none;
   border-radius: 18px;
-  background: rgba(145, 71, 255, 0.85);
+  background: ${token("colors.twitchBg")};
   color: white;
   cursor: grab;
   transition: background 0.1s ease, transform 0.1s ease;
@@ -40,7 +48,7 @@
 }
 
 .widget:hover {
-  background: rgba(145, 71, 255, 0.9);
+  background: ${token("colors.twitchBgHover")};
   transform: scale(1.05);
 }
 
@@ -74,7 +82,9 @@
   padding: 0 6px;
   border-radius: 10px;
   background: white;
-  color: #9147ff;
+  color: ${token("colors.twitch")};
   font-size: 12px;
   font-weight: bold;
+}
+`;
 }

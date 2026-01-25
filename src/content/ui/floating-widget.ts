@@ -8,9 +8,9 @@ import {
   type EventManager,
   type PositionPersistence,
 } from "../behaviors";
-import widgetStyles from "./floating-widget.css?raw";
 import { createShadowHost, injectStyles } from "./shadow-dom";
 import { BOOKMARK_ICON_OUTLINED } from "./styles";
+import { getWidgetStyles } from "./widget.styles";
 
 const STORAGE_KEY = "twitch-clip-todo-widget-position";
 const HIDE_DELAY_MS = 3000;
@@ -107,8 +107,8 @@ class FloatingWidgetManager {
     const { host, shadow } = createShadowHost("twitch-clip-todo-floating-widget");
     this.shadow = shadow;
 
-    // Inject CSS from file
-    injectStyles(shadow, widgetStyles);
+    // Inject CSS using Panda CSS tokens
+    injectStyles(shadow, getWidgetStyles());
 
     const button = document.createElement("button");
     button.className = "widget";
