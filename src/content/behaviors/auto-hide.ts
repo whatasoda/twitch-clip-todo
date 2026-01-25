@@ -51,9 +51,10 @@ export function createAutoHide(
       timeoutId = null;
     }
 
-    // Don't re-show if auto-hidden
-    if (isHidden) return;
-
+    // Reset hidden state if auto-hidden
+    if (isHidden) {
+      isHidden = false;
+    }
     onShow?.();
   }
 
