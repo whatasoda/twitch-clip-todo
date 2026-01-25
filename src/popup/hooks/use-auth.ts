@@ -1,6 +1,6 @@
 import { createResource, createSignal } from "solid-js";
 import type { DeviceCodeResponse } from "../../infrastructure/twitch-api/types";
-import type { MessageResponse } from "../../shared/types";
+import { sendMessage } from "../../shared/messaging";
 
 export type AuthStatus = "idle" | "pending" | "authenticated" | "error";
 
@@ -14,52 +14,26 @@ interface DeviceAuthState {
 }
 
 async function getAuthStatus(): Promise<AuthCheckResult> {
-  const response = (await chrome.runtime.sendMessage({
-    type: "TWITCH_GET_AUTH_STATUS",
-  })) as MessageResponse<AuthCheckResult>;
-
-  if (!response.success) {
-    throw new Error(response.error);
-  }
-  return response.data;
+  return sendMessage<AuthCheckResult>({ type: "TWITCH_GET_AUTH_STATUS" });
 }
 
 async function startDeviceAuth(): Promise<DeviceCodeResponse> {
-  const response = (await chrome.runtime.sendMessage({
-    type: "TWITCH_START_DEVICE_AUTH",
-  })) as MessageResponse<DeviceCodeResponse>;
-
-  if (!response.success) {
-    throw new Error(response.error);
-  }
-  return response.data;
+  return sendMessage<DeviceCodeResponse>({ type: "TWITCH_START_DEVICE_AUTH" });
 }
 
 async function pollForToken(deviceCode: string, interval: number): Promise<void> {
-  const response = (await chrome.runtime.sendMessage({
+  await sendMessage<unknown>({
     type: "TWITCH_POLL_TOKEN",
     payload: { deviceCode, interval },
-  })) as MessageResponse<unknown>;
-
-  if (!response.success) {
-    throw new Error(response.error);
-  }
-}
-
-async function cancelAuth(): Promise<void> {
-  await chrome.runtime.sendMessage({
-    type: "TWITCH_CANCEL_AUTH",
   });
 }
 
-async function logout(): Promise<void> {
-  const response = (await chrome.runtime.sendMessage({
-    type: "TWITCH_LOGOUT",
-  })) as MessageResponse<null>;
+async function cancelAuth(): Promise<void> {
+  await sendMessage<null>({ type: "TWITCH_CANCEL_AUTH" });
+}
 
-  if (!response.success) {
-    throw new Error(response.error);
-  }
+async function logout(): Promise<void> {
+  await sendMessage<null>({ type: "TWITCH_LOGOUT" });
 }
 
 export function useAuth() {

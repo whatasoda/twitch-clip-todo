@@ -1,33 +1,19 @@
 import type { Record } from "../../core/record";
 import { buildClipCreationUrl } from "../../core/twitch";
 import type { DiscoveryResult } from "../../services/vod-discovery.service";
-import type { MessageResponse } from "../../shared/types";
+import { sendMessage } from "../../shared/messaging";
 
 export function useRecordActions() {
   async function updateMemo(id: string, memo: string): Promise<Record> {
-    const response = await chrome.runtime.sendMessage<unknown, MessageResponse<Record>>({
-      type: "UPDATE_MEMO",
-      payload: { id, memo },
-    });
-    if (!response.success) throw new Error(response.error);
-    return response.data;
+    return sendMessage<Record>({ type: "UPDATE_MEMO", payload: { id, memo } });
   }
 
   async function markCompleted(id: string): Promise<Record> {
-    const response = await chrome.runtime.sendMessage<unknown, MessageResponse<Record>>({
-      type: "MARK_COMPLETED",
-      payload: { id },
-    });
-    if (!response.success) throw new Error(response.error);
-    return response.data;
+    return sendMessage<Record>({ type: "MARK_COMPLETED", payload: { id } });
   }
 
   async function deleteRecord(id: string): Promise<void> {
-    const response = await chrome.runtime.sendMessage<unknown, MessageResponse<null>>({
-      type: "DELETE_RECORD",
-      payload: { id },
-    });
-    if (!response.success) throw new Error(response.error);
+    await sendMessage<null>({ type: "DELETE_RECORD", payload: { id } });
   }
 
   async function openClipCreation(record: Record): Promise<void> {
@@ -47,12 +33,10 @@ export function useRecordActions() {
   }
 
   async function discoverVodForStreamer(streamerId: string): Promise<DiscoveryResult> {
-    const response = await chrome.runtime.sendMessage<unknown, MessageResponse<DiscoveryResult>>({
+    return sendMessage<DiscoveryResult>({
       type: "DISCOVER_VOD_FOR_STREAMER",
       payload: { streamerId },
     });
-    if (!response.success) throw new Error(response.error);
-    return response.data;
   }
 
   return {

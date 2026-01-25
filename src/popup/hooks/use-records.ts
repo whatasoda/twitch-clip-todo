@@ -1,15 +1,9 @@
 import { createResource, onCleanup, onMount } from "solid-js";
 import type { Record } from "../../core/record";
-import type { MessageResponse } from "../../shared/types";
+import { sendMessage } from "../../shared/messaging";
 
 async function fetchRecords(): Promise<Record[]> {
-  const response = await chrome.runtime.sendMessage<unknown, MessageResponse<Record[]>>({
-    type: "GET_RECORDS",
-  });
-  if (!response.success) {
-    throw new Error(response.error);
-  }
-  return response.data;
+  return sendMessage<Record[]>({ type: "GET_RECORDS" });
 }
 
 export function useRecords() {
