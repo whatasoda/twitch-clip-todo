@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prepare": "panda codegen",
-    "dev": "panda codegen && vite",
-    "build": "panda codegen && vite build",
+    "prepare": "panda codegen && panda codegen --config panda.content.config.ts",
+    "dev": "bun run prepare && vite",
+    "build": "bun run prepare && vite build",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome format --write .",

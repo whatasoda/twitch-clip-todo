@@ -7,6 +7,7 @@ dist-dev/
 
 # Generated files
 styled-system/
+styled-system-content/
 
 # Bun
 bun.lockb
