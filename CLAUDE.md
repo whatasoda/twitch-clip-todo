@@ -6,7 +6,7 @@ Chrome extension for bookmarking moments during Twitch streams to create clips l
 
 - **Build**: Vite + @crxjs/vite-plugin
 - **Language**: TypeScript (strict)
-- **UI**: Solid.js (Side Panel only)
+- **UI**: Solid.js (Popup only)
 - **Styling**: Panda CSS
 - **Lint/Format**: Biome
 - **Testing**: Vitest
@@ -28,7 +28,7 @@ bun run test       # Run tests
 Layered architecture with dependency injection (based on quick-tabby patterns):
 
 ```
-Presentation (Side Panel, Content Script UI)
+Presentation (Popup, Content Script UI)
     ↓
 Services (Business logic with DI)
     ↓
@@ -43,7 +43,8 @@ Infrastructure (Chrome API abstraction)
 src/
 ├── background/      # Service Worker
 ├── content/         # Content Script (twitch.tv)
-├── sidepanel/       # Side Panel UI (Solid.js)
+├── popup/           # Popup UI (Solid.js)
+├── components/      # Shared UI components
 ├── services/        # Business logic layer
 ├── core/            # Domain logic
 ├── infrastructure/  # Chrome API wrappers
@@ -58,5 +59,5 @@ src/
 ## Chrome Extension
 
 - Manifest V3
-- Permissions: tabs, storage, activeTab, sidePanel
+- Permissions: tabs, storage, activeTab, alarms
 - Content Script runs on twitch.tv only
