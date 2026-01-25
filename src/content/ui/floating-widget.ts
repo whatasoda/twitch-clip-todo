@@ -144,6 +144,7 @@ class FloatingWidgetManager {
         bounds: () => ({ width: window.innerWidth, height: window.innerHeight }),
         onDragStart: () => {
           button.classList.add("dragging");
+          this.autoHide?.reset();
         },
         onDragEnd: () => {
           button.classList.remove("dragging");
