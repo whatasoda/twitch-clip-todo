@@ -67,7 +67,7 @@ function tryInjectNextToClipButton(buttonHost: HTMLElement): boolean {
 
     // Find a suitable container that we can insert before
     // Twitch typically wraps buttons in div containers
-    while (wrapper && wrapper.parentElement) {
+    while (wrapper?.parentElement) {
       const parent = wrapper.parentElement;
       // Check if parent contains other button elements (indicating it's the button row)
       if (parent.children.length > 1) {
@@ -92,7 +92,7 @@ function injectIntoPlayerControls(buttonHost: HTMLElement): boolean {
     const rightControls = controlsBar.querySelector(
       '[class*="player-controls__right-control-group"]',
     );
-    if (rightControls && rightControls.firstChild) {
+    if (rightControls?.firstChild) {
       rightControls.insertBefore(buttonHost, rightControls.firstChild);
       return true;
     }
