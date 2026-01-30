@@ -2,7 +2,7 @@
 
 ## インストール
 
-1. [Chrome ウェブストア](https://chromewebstore.google.com/detail/twitch-clip-todo/EXTENSION_ID)からインストール
+1. [Chrome ウェブストア](https://chromewebstore.google.com/detail/twitch-clip-todo/epkbgljmnfinifbbigfkanhecgflckmj)からインストール
 2. 拡張機能をピン留めしてアクセスしやすく
 3. Twitch の配信ページへ移動
 

@@ -10,7 +10,7 @@ hero:
       link: /en/guide
     - theme: alt
       text: Install
-      link: https://chromewebstore.google.com/detail/twitch-clip-todo/EXTENSION_ID
+      link: https://chromewebstore.google.com/detail/twitch-clip-todo/epkbgljmnfinifbbigfkanhecgflckmj
 features:
   - title: One-Click Recording
     details: Bookmark moments instantly with keyboard shortcut or button

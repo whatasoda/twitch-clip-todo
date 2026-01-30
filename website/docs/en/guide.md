@@ -2,7 +2,7 @@
 
 ## Installation
 
-1. Install from [Chrome Web Store](https://chromewebstore.google.com/detail/twitch-clip-todo/EXTENSION_ID)
+1. Install from [Chrome Web Store](https://chromewebstore.google.com/detail/twitch-clip-todo/epkbgljmnfinifbbigfkanhecgflckmj)
 2. Pin the extension for easy access
 3. Navigate to any Twitch stream
 

@@ -13,7 +13,7 @@ Bookmark moments during Twitch streams to create clips later.
 
 ## Install
 
-[Install from Chrome Web Store](https://chromewebstore.google.com/detail/twitch-clip-todo/EXTENSION_ID)
+[Install from Chrome Web Store](https://chromewebstore.google.com/detail/twitch-clip-todo/epkbgljmnfinifbbigfkanhecgflckmj)
 
 <!-- TODO: Add screenshot or demo GIF -->
 <!-- ![Demo](docs/assets/demo.gif) -->
@@ -30,7 +30,7 @@ bun run lint       # Lint and format check
 
 ## Documentation
 
-Visit the [documentation site](https://twitch-clip-todo.example.com) for detailed usage guide.
+Visit the [documentation site](https://twitch-clip-todo.whatasoda.me) for detailed usage guide.
 
 ## License
 

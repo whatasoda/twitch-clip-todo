@@ -10,7 +10,7 @@ hero:
       link: /ja/guide
     - theme: alt
       text: インストール
-      link: https://chromewebstore.google.com/detail/twitch-clip-todo/EXTENSION_ID
+      link: https://chromewebstore.google.com/detail/twitch-clip-todo/epkbgljmnfinifbbigfkanhecgflckmj
 features:
   - title: ワンクリック記録
     details: キーボードショートカットまたはボタンで瞬時にブックマーク
