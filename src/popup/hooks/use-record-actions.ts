@@ -34,10 +34,14 @@ export function useRecordActions() {
   }
 
   async function discoverVodForStreamer(streamerId: string): Promise<DiscoveryResult> {
-    return sendMessage<DiscoveryResult>({
-      type: "DISCOVER_VOD_FOR_STREAMER",
-      payload: { streamerId },
-    });
+    try {
+      return await sendMessage<DiscoveryResult>({
+        type: "DISCOVER_VOD_FOR_STREAMER",
+        payload: { streamerId },
+      });
+    } catch {
+      return { streamerId, linkedCount: 0, error: "messaging_error" };
+    }
   }
 
   async function getRecentVods(streamerId: string): Promise<VodMetadata[]> {
