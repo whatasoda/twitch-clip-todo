@@ -7,6 +7,7 @@ export interface CreateRecordPayload {
   sourceType: "live" | "vod";
   vodId: string | null;
   broadcastId: string | null;
+  memo?: string;
 }
 
 export interface LinkVodPayload {
@@ -22,6 +23,8 @@ export type MessageToBackground =
   | { type: "UPDATE_MEMO"; payload: { id: string; memo: string } }
   | { type: "MARK_COMPLETED"; payload: { id: string } }
   | { type: "DELETE_RECORD"; payload: { id: string } }
+  | { type: "DELETE_RECORDS_BY_STREAMER"; payload: { streamerId: string } }
+  | { type: "DELETE_COMPLETED_RECORDS" }
   | { type: "GET_RECORDS"; payload?: { streamerId?: string } }
   | { type: "LINK_VOD"; payload: LinkVodPayload }
   | { type: "GET_PENDING_COUNT"; payload: { streamerId: string } }
@@ -38,6 +41,7 @@ export type MessageToBackground =
   | { type: "TWITCH_GET_CURRENT_STREAM"; payload: { login: string } }
   | { type: "TWITCH_GET_CURRENT_STREAM_CACHED"; payload: { login: string } }
   | { type: "RUN_VOD_DISCOVERY" }
-  | { type: "DISCOVER_VOD_FOR_STREAMER"; payload: { streamerId: string } };
+  | { type: "DISCOVER_VOD_FOR_STREAMER"; payload: { streamerId: string } }
+  | { type: "GET_RECENT_VODS"; payload: { streamerId: string } };
 
 export type MessageResponse<T> = { success: true; data: T } | { success: false; error: string };

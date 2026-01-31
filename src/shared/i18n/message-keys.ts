@@ -18,9 +18,15 @@ export const MSG = {
   POPUP_BADGE_LIVE: "popup_badgeLive",
   POPUP_BADGE_VOD: "popup_badgeVod",
 
+  // Popup - Tabs
+  POPUP_TAB_PENDING: "popup_tabPending",
+  POPUP_TAB_COMPLETED: "popup_tabCompleted",
+
   // Popup - Empty State
   POPUP_EMPTY_TITLE: "popup_emptyTitle",
   POPUP_EMPTY_DESCRIPTION: "popup_emptyDescription",
+  POPUP_EMPTY_COMPLETED_TITLE: "popup_emptyCompletedTitle",
+  POPUP_EMPTY_COMPLETED_DESCRIPTION: "popup_emptyCompletedDescription",
 
   // Auth
   AUTH_DISCONNECT: "auth_disconnect",
@@ -35,7 +41,13 @@ export const MSG = {
   RECORD_FIND_VOD: "record_findVod",
   RECORD_FIND_VODS: "record_findVods",
   RECORD_NO_BROADCAST_ID: "record_noBroadcastId",
+  RECORD_SELECT_VOD: "record_selectVod",
+  RECORD_NO_VODS_AVAILABLE: "record_noVodsAvailable",
   RECORD_DELETE_LABEL: "record_deleteLabel",
+  RECORD_DELETE_ALL: "record_deleteAll",
+  RECORD_DELETE_ALL_CONFIRM: "record_deleteAllConfirm",
+  RECORD_DELETE_ALL_COMPLETED: "record_deleteAllCompleted",
+  RECORD_DELETE_ALL_COMPLETED_CONFIRM: "record_deleteAllCompletedConfirm",
   RECORD_ADD_MEMO_PLACEHOLDER: "record_addMemoPlaceholder",
   RECORD_ENTER_MEMO_PLACEHOLDER: "record_enterMemoPlaceholder",
 
@@ -64,6 +76,7 @@ export const MSG = {
   TOAST_RECORDING_CANCELLED: "toast_recordingCancelled",
   TOAST_CANCEL_FAILED: "toast_cancelFailed",
   TOAST_RECORD_FAILED: "toast_recordFailed",
+  TOAST_VOD_LINKED: "toast_vodLinked",
 } as const;
 
 export type MessageKey = (typeof MSG)[keyof typeof MSG];

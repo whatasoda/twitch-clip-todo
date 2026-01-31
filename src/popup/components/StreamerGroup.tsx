@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Search } from "lucide-solid";
+import { ChevronDown, ChevronRight, Search, Trash2 } from "lucide-solid";
 import { createSignal, For, Show } from "solid-js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Flex, HStack } from "../../../styled-system/jsx";
 import type { Record } from "../../core/record";
+import type { VodMetadata } from "../../services/twitch.service";
 import { RecordItem } from "./RecordItem";
 
 interface StreamerGroupProps {
@@ -14,8 +15,11 @@ interface StreamerGroupProps {
   records: Record[];
   onUpdateMemo: (id: string, memo: string) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
+  onDeleteAll: (streamerId: string) => Promise<unknown>;
   onOpenClip: (record: Record) => Promise<unknown>;
   onFindVod: (streamerId: string) => Promise<unknown>;
+  onGetRecentVods: (streamerId: string) => Promise<VodMetadata[]>;
+  onSelectVod: (record: Record, vodId: string, offsetSeconds: number) => Promise<void>;
 }
 
 export function StreamerGroup(props: StreamerGroupProps) {
@@ -32,6 +36,18 @@ export function StreamerGroup(props: StreamerGroupProps) {
       await props.onFindVod(props.streamerId);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAll = async (e: Event) => {
+    e.stopPropagation();
+    if (confirm(t(MSG.RECORD_DELETE_ALL_CONFIRM))) {
+      setIsLoading(true);
+      try {
+        await props.onDeleteAll(props.streamerId);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -55,6 +71,9 @@ export function StreamerGroup(props: StreamerGroupProps) {
               <Search size={14} /> {t(MSG.RECORD_FIND_VODS)}
             </Button>
           </Show>
+          <Button size="xs" variant="ghost" onClick={handleDeleteAll} disabled={isLoading()}>
+            <Trash2 size={14} /> {t(MSG.RECORD_DELETE_ALL)}
+          </Button>
           <Show when={pendingCount() > 0}>
             <Badge variant="solid" size="sm">
               {pendingCount()}
@@ -74,6 +93,8 @@ export function StreamerGroup(props: StreamerGroupProps) {
               onDelete={props.onDelete}
               onOpenClip={props.onOpenClip}
               onFindVod={props.onFindVod}
+              onGetRecentVods={props.onGetRecentVods}
+              onSelectVod={props.onSelectVod}
             />
           )}
         </For>

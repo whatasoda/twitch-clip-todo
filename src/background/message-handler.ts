@@ -112,6 +112,19 @@ export async function handleMessage(
         return { success: true, data: result };
       }
 
+      case "GET_RECENT_VODS": {
+        if (!twitchService) {
+          return { success: true, data: [] };
+        }
+        const { streamerId } = message.payload as { streamerId: string };
+        const streamerInfo = await twitchService.getStreamerInfo(streamerId);
+        if (!streamerInfo) {
+          return { success: true, data: [] };
+        }
+        const vods = await twitchService.getRecentVodsByUserId(streamerInfo.id);
+        return { success: true, data: vods };
+      }
+
       case "CREATE_RECORD": {
         const record = await recordService.create(message.payload as CreateRecordPayload);
         return { success: true, data: record };
@@ -141,6 +154,17 @@ export async function handleMessage(
         const { id } = message.payload as { id: string };
         await recordService.delete(id);
         return { success: true, data: null };
+      }
+
+      case "DELETE_RECORDS_BY_STREAMER": {
+        const { streamerId } = message.payload as { streamerId: string };
+        const deleted = await recordService.deleteByStreamerId(streamerId);
+        return { success: true, data: deleted };
+      }
+
+      case "DELETE_COMPLETED_RECORDS": {
+        const deleted = await recordService.deleteCompleted();
+        return { success: true, data: deleted };
       }
 
       case "LINK_VOD": {

@@ -10,12 +10,18 @@ import { Box, Flex, HStack } from "../../../styled-system/jsx";
 import type { Record } from "../../core/record";
 import { formatTimestamp } from "../../core/twitch";
 
+import type { VodMetadata } from "../../services/twitch.service";
+import { VodPicker } from "./VodPicker";
+
 interface RecordItemProps {
   record: Record;
   onUpdateMemo: (id: string, memo: string) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
   onOpenClip: (record: Record) => Promise<unknown>;
   onFindVod: (streamerId: string) => Promise<unknown>;
+  onGetRecentVods?: (streamerId: string) => Promise<VodMetadata[]>;
+  onSelectVod?: (record: Record, vodId: string, offsetSeconds: number) => Promise<void>;
+  showStreamerName?: boolean;
 }
 
 export function RecordItem(props: RecordItemProps) {
@@ -76,9 +82,16 @@ export function RecordItem(props: RecordItemProps) {
       _hover={{ bg: "bg.muted" }}
     >
       <Flex alignItems="center" justifyContent="space-between" mb="2">
-        <Box fontWeight="bold" color="accent.default" fontFamily="mono">
-          {formatTimestamp(props.record.timestampSeconds)}
-        </Box>
+        <HStack gap="2">
+          <Show when={props.showStreamerName}>
+            <Box fontWeight="semibold" fontSize="sm">
+              {props.record.streamerName}
+            </Box>
+          </Show>
+          <Box fontWeight="bold" color="accent.default" fontFamily="mono">
+            {formatTimestamp(props.record.timestampSeconds)}
+          </Box>
+        </HStack>
         <HStack gap="1">
           <Show when={canCreateClip()}>
             <Button
@@ -104,7 +117,23 @@ export function RecordItem(props: RecordItemProps) {
               <Search size={14} /> {t(MSG.RECORD_FIND_VOD)}
             </Button>
           </Show>
-          <Show when={!canCreateClip() && !canFindVod()}>
+          <Show
+            when={
+              !canCreateClip() &&
+              !canFindVod() &&
+              props.onGetRecentVods &&
+              props.onSelectVod && { getVods: props.onGetRecentVods, selectVod: props.onSelectVod }
+            }
+          >
+            {(fns) => (
+              <VodPicker
+                record={props.record}
+                onGetRecentVods={fns().getVods}
+                onSelectVod={fns().selectVod}
+              />
+            )}
+          </Show>
+          <Show when={!canCreateClip() && !canFindVod() && !props.onGetRecentVods}>
             <Badge variant="outline" size="sm">
               {t(MSG.RECORD_NO_BROADCAST_ID)}
             </Badge>

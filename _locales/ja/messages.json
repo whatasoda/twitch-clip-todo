@@ -53,6 +53,14 @@
     "message": "VOD",
     "description": "VODバッジ"
   },
+  "popup_tabPending": {
+    "message": "未完了",
+    "description": "未完了レコードのタブラベル"
+  },
+  "popup_tabCompleted": {
+    "message": "完了済み",
+    "description": "完了済みレコードのタブラベル"
+  },
   "popup_emptyTitle": {
     "message": "まだ記録がありません",
     "description": "空状態のタイトル"
@@ -60,6 +68,14 @@
   "popup_emptyDescription": {
     "message": "Twitch配信ページで Alt+Shift+C を押すか、ピンボタンをクリックして瞬間を記録しましょう。",
     "description": "空状態の説明"
+  },
+  "popup_emptyCompletedTitle": {
+    "message": "完了したクリップはまだありません",
+    "description": "完了済みタブの空状態タイトル"
+  },
+  "popup_emptyCompletedDescription": {
+    "message": "作成したクリップがここに表示されます。",
+    "description": "完了済みタブの空状態説明"
   },
   "auth_disconnect": {
     "message": "切断",
@@ -101,9 +117,33 @@
     "message": "配信IDなし",
     "description": "配信IDがない場合のバッジ"
   },
+  "record_selectVod": {
+    "message": "VODを選択",
+    "description": "VODを選んでクリップ作成するボタン"
+  },
+  "record_noVodsAvailable": {
+    "message": "VODがありません",
+    "description": "配信者のVODが見つからない場合のメッセージ"
+  },
   "record_deleteLabel": {
     "message": "記録を削除",
     "description": "削除ボタンのaria-label"
+  },
+  "record_deleteAll": {
+    "message": "すべて削除",
+    "description": "ストリーマーの全レコード削除"
+  },
+  "record_deleteAllConfirm": {
+    "message": "この配信者のすべての記録を削除しますか？",
+    "description": "ストリーマーの全レコード削除確認"
+  },
+  "record_deleteAllCompleted": {
+    "message": "完了済みをすべて削除",
+    "description": "完了済みレコード全削除"
+  },
+  "record_deleteAllCompletedConfirm": {
+    "message": "完了済みの記録をすべて削除しますか？",
+    "description": "完了済みレコード全削除確認"
   },
   "record_addMemoPlaceholder": {
     "message": "クリックしてメモを追加...",
@@ -187,5 +227,12 @@
   "toast_recordFailed": {
     "message": "記録に失敗しました",
     "description": "記録失敗時のトースト"
+  },
+  "toast_vodLinked": {
+    "message": "$1 件のレコードをこのVODにリンクしました",
+    "description": "VODへの自動リンク時のトースト",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   }
 }

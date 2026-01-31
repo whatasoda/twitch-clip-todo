@@ -1,16 +1,16 @@
 import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
 import type { PageInfo } from "../core/twitch";
-import { createRecord, deleteRecord, updateMemo } from "./messaging";
+import type { CreateRecordPayload } from "../shared/types";
+import { createRecord } from "./messaging";
 import {
   getBroadcastId,
   getLiveTimestamp,
   getStreamerWithFallback,
   getVodTimestamp,
+  type StreamerResult,
 } from "./providers";
 import { showMemoInput, showToast } from "./ui";
-
-let pendingRecordId: string | null = null;
 
 export interface RecordHandlerDeps {
   getCurrentPageInfo: () => PageInfo;
@@ -19,6 +19,18 @@ export interface RecordHandlerDeps {
 
 export function createRecordHandler(deps: RecordHandlerDeps) {
   const { getCurrentPageInfo, onRecordComplete } = deps;
+
+  // Page-level caches (cleared on page navigation via onRecordComplete's parent)
+  let cachedLoginFromUrl: string | null = null;
+  let cachedStreamerResult: StreamerResult | null = null;
+  // undefined = not yet cached, null = cached as no broadcast ID
+  let cachedBroadcastId: string | null | undefined;
+
+  function clearCache(): void {
+    cachedLoginFromUrl = null;
+    cachedStreamerResult = null;
+    cachedBroadcastId = undefined;
+  }
 
   async function handleRecord(): Promise<void> {
     const pageInfo = getCurrentPageInfo();
@@ -29,18 +41,59 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
 
     const loginFromUrl = pageInfo.streamerId;
 
+    // Start data fetching immediately (runs in parallel with memo input)
+    const dataPromise = fetchRecordData(pageInfo, loginFromUrl);
+
+    // Show memo input immediately; save button is disabled until data is ready
+    showMemoInput(
+      async (memo) => {
+        try {
+          const data = await dataPromise;
+          await createRecord({ ...data, memo });
+          showToast(t(MSG.TOAST_MOMENT_RECORDED), "success");
+          onRecordComplete();
+        } catch (error) {
+          showToast(t(MSG.TOAST_RECORD_FAILED), "error");
+          console.error("[Twitch Clip Todo]", error);
+        }
+      },
+      () => {
+        // Cancel: nothing to clean up since no record was created yet
+      },
+      dataPromise.then(() => {}),
+    );
+  }
+
+  async function fetchRecordData(
+    pageInfo: PageInfo,
+    loginFromUrl: string | null,
+  ): Promise<CreateRecordPayload> {
+    // Invalidate cache if streamer changed
+    if (cachedLoginFromUrl !== null && cachedLoginFromUrl !== loginFromUrl) {
+      clearCache();
+    }
+    cachedLoginFromUrl = loginFromUrl;
+
     // Get timestamp and broadcastId using provider chain
     let timestamp: number | null = null;
     let broadcastId: string | null = null;
 
     if (pageInfo.type === "live" && loginFromUrl) {
       // Live: Get timestamp and broadcast ID from API with DOM fallback
+      const broadcastIdPromise =
+        cachedBroadcastId !== undefined
+          ? Promise.resolve(cachedBroadcastId)
+          : getBroadcastId(loginFromUrl).then((r) => {
+              cachedBroadcastId = r?.broadcastId ?? null;
+              return cachedBroadcastId;
+            });
+
       const [timestampResult, broadcastIdResult] = await Promise.all([
         getLiveTimestamp(loginFromUrl),
-        getBroadcastId(loginFromUrl),
+        broadcastIdPromise,
       ]);
       timestamp = timestampResult?.seconds ?? null;
-      broadcastId = broadcastIdResult?.broadcastId ?? null;
+      broadcastId = broadcastIdResult;
     } else {
       // VOD: Get timestamp from DOM
       const timestampResult = await getVodTimestamp();
@@ -48,58 +101,31 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
     }
 
     if (timestamp === null) {
-      showToast(t(MSG.TOAST_NO_TIMESTAMP), "error");
-      return;
+      throw new Error(t(MSG.TOAST_NO_TIMESTAMP));
     }
 
-    // Get streamer info using provider chain
-    const streamerResult = await getStreamerWithFallback(loginFromUrl);
+    // Get streamer info using provider chain (with cache)
+    let streamerResult = cachedStreamerResult;
+    if (!streamerResult) {
+      streamerResult = await getStreamerWithFallback(loginFromUrl);
+      if (streamerResult) {
+        cachedStreamerResult = streamerResult;
+      }
+    }
 
     if (!streamerResult) {
-      showToast(t(MSG.TOAST_NO_STREAMER_NAME), "error");
-      return;
+      throw new Error(t(MSG.TOAST_NO_STREAMER_NAME));
     }
 
-    try {
-      const record = await createRecord({
-        streamerId: loginFromUrl ?? streamerResult.login,
-        streamerName: streamerResult.displayName,
-        timestampSeconds: timestamp,
-        sourceType: pageInfo.type as "live" | "vod",
-        vodId: pageInfo.vodId,
-        broadcastId,
-      });
-
-      pendingRecordId = record.id;
-      showMemoInput(
-        async (memo) => {
-          if (memo && pendingRecordId) {
-            await updateMemo(pendingRecordId, memo);
-          }
-          showToast(t(MSG.TOAST_MOMENT_RECORDED), "success");
-          pendingRecordId = null;
-          onRecordComplete();
-        },
-        async () => {
-          // Cancel: Delete the pending record
-          if (pendingRecordId) {
-            try {
-              await deleteRecord(pendingRecordId);
-              showToast(t(MSG.TOAST_RECORDING_CANCELLED), "info");
-            } catch (error) {
-              console.error("[Twitch Clip Todo] Failed to delete record:", error);
-              showToast(t(MSG.TOAST_CANCEL_FAILED), "error");
-            }
-          }
-          pendingRecordId = null;
-          onRecordComplete();
-        },
-      );
-    } catch (error) {
-      showToast(t(MSG.TOAST_RECORD_FAILED), "error");
-      console.error("[Twitch Clip Todo]", error);
-    }
+    return {
+      streamerId: loginFromUrl ?? streamerResult.login,
+      streamerName: streamerResult.displayName,
+      timestampSeconds: timestamp,
+      sourceType: pageInfo.type as "live" | "vod",
+      vodId: pageInfo.vodId,
+      broadcastId,
+    };
   }
 
-  return { handleRecord };
+  return { handleRecord, clearCache };
 }

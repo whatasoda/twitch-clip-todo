@@ -12,7 +12,7 @@ export function createRecord(payload: CreateRecordPayload): Record {
     streamerId: payload.streamerId,
     streamerName: payload.streamerName,
     timestampSeconds: payload.timestampSeconds,
-    memo: "",
+    memo: payload.memo ?? "",
     sourceType: payload.sourceType,
     vodId: payload.vodId,
     broadcastId: payload.broadcastId,

@@ -15,7 +15,7 @@ import { BOOKMARK_ICON_OUTLINED, RETRY_ICON } from "./styles";
 import { getWidgetStyles } from "./widget.styles";
 
 const STORAGE_KEY = "twitch-clip-todo-widget-position";
-const HIDE_DELAY_MS = 3000;
+const HIDE_DELAY_MS = 2000;
 const WIDGET_WIDTH = 60;
 const WIDGET_HEIGHT = 40;
 

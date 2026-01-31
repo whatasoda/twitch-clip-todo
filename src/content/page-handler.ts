@@ -1,3 +1,5 @@
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import type { PageInfo } from "../core/twitch";
 import { getPendingCount, getVodMetadataFromApi, linkVod } from "./messaging";
 import {
@@ -15,12 +17,15 @@ import {
 export interface PageHandlerDeps {
   onRecord: () => Promise<void>;
   onOpenPopup: () => void;
+  onPageChange?: () => void;
 }
 
 export function createPageHandler(deps: PageHandlerDeps) {
-  const { onRecord, onOpenPopup } = deps;
+  const { onRecord, onOpenPopup, onPageChange } = deps;
 
   async function handlePageChange(pageInfo: PageInfo): Promise<void> {
+    onPageChange?.();
+
     // Clean up UI
     removeRecordButton();
     removeChatButton();
@@ -46,7 +51,7 @@ export function createPageHandler(deps: PageHandlerDeps) {
               durationSeconds: apiVodMeta.durationSeconds,
             });
             if (linked.length > 0) {
-              showToast(`Linked ${linked.length} record(s) to this VOD`, "info");
+              showToast(t(MSG.TOAST_VOD_LINKED, String(linked.length)), "info");
             }
           }
 

@@ -18,6 +18,7 @@ const recordHandler = createRecordHandler({
 const pageHandler = createPageHandler({
   onRecord: recordHandler.handleRecord,
   onOpenPopup: openPopup,
+  onPageChange: recordHandler.clearCache,
 });
 
 // Listen for keyboard shortcut trigger from background

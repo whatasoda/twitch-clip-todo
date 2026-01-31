@@ -2,17 +2,21 @@ import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
 import { createShadowHost } from "./shadow-dom";
 import { styles } from "./styles";
+import { showToast } from "./toast";
 
 let containerElement: HTMLElement | null = null;
 
 export function showMemoInput(
   onSave: (memo: string) => void | Promise<void>,
   onCancel: () => void | Promise<void>,
+  readyPromise?: Promise<void>,
 ): void {
   if (containerElement) return;
 
   const { host, shadow } = createShadowHost("twitch-clips-todo-memo");
 
+  // The backdrop is transparent so it does not block the stream view.
+  // Users can continue watching while entering a memo.
   const backdrop = document.createElement("div");
   backdrop.setAttribute("style", styles.memoInput.backdrop);
 
@@ -41,10 +45,28 @@ export function showMemoInput(
   saveBtn.setAttribute("style", styles.memoInput.saveButton);
   saveBtn.textContent = t(MSG.COMMON_SAVE);
 
+  // If readyPromise is provided, disable save button until data is ready
+  let isReady = !readyPromise;
+  if (readyPromise) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = `${t(MSG.COMMON_LOADING)}`;
+    readyPromise
+      .then(() => {
+        isReady = true;
+        saveBtn.disabled = false;
+        saveBtn.textContent = t(MSG.COMMON_SAVE);
+      })
+      .catch((error: unknown) => {
+        showToast(error instanceof Error ? error.message : t(MSG.TOAST_RECORD_FAILED), "error");
+        hideMemoInput();
+      });
+  }
+
   // IME composition state
   let isComposing = false;
 
   const handleSave = async () => {
+    if (!isReady) return;
     saveBtn.disabled = true;
     cancelBtn.disabled = true;
     await onSave(input.value);
@@ -78,8 +100,10 @@ export function showMemoInput(
     } else if (e.key === "Escape") {
       e.preventDefault();
       e.stopPropagation();
-      // ESC should always cancel, even during composition
-      handleCancel();
+      // Only cancel if not in IME composition (let IME handle ESC itself)
+      if (!isComposing && !e.isComposing) {
+        handleCancel();
+      }
     }
   });
 

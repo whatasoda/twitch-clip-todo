@@ -17,6 +17,8 @@ export interface RecordService {
   markCompleted(id: string): Promise<Record>;
   linkToVod(id: string, vodId: string, vodOffset: number): Promise<Record>;
   delete(id: string): Promise<void>;
+  deleteByStreamerId(streamerId: string): Promise<number>;
+  deleteCompleted(): Promise<number>;
   getPendingCount(streamerId: string): Promise<number>;
 }
 
@@ -97,6 +99,28 @@ export function createRecordService(deps: RecordServiceDeps): RecordService {
       const store = await getStore();
       store.records = store.records.filter((r) => r.id !== id);
       await saveStore(store);
+    },
+
+    async deleteByStreamerId(streamerId) {
+      const store = await getStore();
+      const before = store.records.length;
+      store.records = store.records.filter((r) => r.streamerId !== streamerId);
+      const deleted = before - store.records.length;
+      if (deleted > 0) {
+        await saveStore(store);
+      }
+      return deleted;
+    },
+
+    async deleteCompleted() {
+      const store = await getStore();
+      const before = store.records.length;
+      store.records = store.records.filter((r) => r.completedAt === null);
+      const deleted = before - store.records.length;
+      if (deleted > 0) {
+        await saveStore(store);
+      }
+      return deleted;
     },
 
     async getPendingCount(streamerId) {

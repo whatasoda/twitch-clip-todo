@@ -53,6 +53,14 @@
     "message": "VOD",
     "description": "VOD badge text"
   },
+  "popup_tabPending": {
+    "message": "Pending",
+    "description": "Tab label for pending records"
+  },
+  "popup_tabCompleted": {
+    "message": "Completed",
+    "description": "Tab label for completed records"
+  },
   "popup_emptyTitle": {
     "message": "No recorded moments yet",
     "description": "Empty state title"
@@ -60,6 +68,14 @@
   "popup_emptyDescription": {
     "message": "Visit a Twitch stream and press Alt+Shift+C or click the pin button to record a moment.",
     "description": "Empty state description"
+  },
+  "popup_emptyCompletedTitle": {
+    "message": "No completed clips yet",
+    "description": "Empty state title for completed tab"
+  },
+  "popup_emptyCompletedDescription": {
+    "message": "Clips you create will appear here.",
+    "description": "Empty state description for completed tab"
   },
   "auth_disconnect": {
     "message": "Disconnect",
@@ -101,9 +117,33 @@
     "message": "No broadcast ID",
     "description": "No broadcast ID badge"
   },
+  "record_selectVod": {
+    "message": "Select VOD",
+    "description": "Button to select a VOD for clip creation"
+  },
+  "record_noVodsAvailable": {
+    "message": "No VODs available",
+    "description": "Message when no VODs are found for the streamer"
+  },
   "record_deleteLabel": {
     "message": "Delete record",
     "description": "Delete button aria-label"
+  },
+  "record_deleteAll": {
+    "message": "Delete all",
+    "description": "Delete all records for a streamer"
+  },
+  "record_deleteAllConfirm": {
+    "message": "Delete all records for this streamer?",
+    "description": "Confirm deletion of all records for a streamer"
+  },
+  "record_deleteAllCompleted": {
+    "message": "Delete all completed",
+    "description": "Delete all completed records"
+  },
+  "record_deleteAllCompletedConfirm": {
+    "message": "Delete all completed records?",
+    "description": "Confirm deletion of all completed records"
   },
   "record_addMemoPlaceholder": {
     "message": "Click to add memo...",
@@ -187,5 +227,12 @@
   "toast_recordFailed": {
     "message": "Failed to record moment",
     "description": "Toast when recording fails"
+  },
+  "toast_vodLinked": {
+    "message": "Linked $1 record(s) to this VOD",
+    "description": "Toast when records are auto-linked to a VOD",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   }
 }
