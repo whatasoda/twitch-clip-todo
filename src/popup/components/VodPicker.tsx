@@ -46,10 +46,11 @@ export function VodPicker(props: VodPickerProps) {
   };
 
   const handleSelect = async (vod: VodMetadata) => {
+    if (isLoading()) return;
     setIsLoading(true);
+    setIsOpen(false);
     try {
       await props.onSelectVod(props.record, vod.vodId, props.record.timestampSeconds);
-      setIsOpen(false);
     } finally {
       setIsLoading(false);
     }
