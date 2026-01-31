@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, onCleanup, Show } from "solid-js";
 import { Button } from "@/components/ui/button";
 import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
@@ -17,6 +17,18 @@ export function VodPicker(props: VodPickerProps) {
   const [isOpen, setIsOpen] = createSignal(false);
   const [isLoading, setIsLoading] = createSignal(false);
   const [vods, setVods] = createSignal<VodMetadata[]>([]);
+  let containerRef: HTMLDivElement | undefined;
+
+  createEffect(() => {
+    if (!isOpen()) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef && !containerRef.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    onCleanup(() => document.removeEventListener("mousedown", handler));
+  });
 
   const handleOpen = async () => {
     if (isOpen()) {
@@ -44,22 +56,18 @@ export function VodPicker(props: VodPickerProps) {
   };
 
   return (
-    <Box position="relative">
+    <Box ref={containerRef} position="relative">
       <Button size="xs" variant="outline" onClick={handleOpen} disabled={isLoading()}>
         {isLoading() ? t(MSG.COMMON_LOADING) : t(MSG.RECORD_SELECT_VOD)}
       </Button>
       <Show when={isOpen()}>
-        <VodDropdown vods={vods()} onSelect={handleSelect} onClose={() => setIsOpen(false)} />
+        <VodDropdown vods={vods()} onSelect={handleSelect} />
       </Show>
     </Box>
   );
 }
 
-function VodDropdown(props: {
-  vods: VodMetadata[];
-  onSelect: (vod: VodMetadata) => void;
-  onClose: () => void;
-}) {
+function VodDropdown(props: { vods: VodMetadata[]; onSelect: (vod: VodMetadata) => void }) {
   return (
     <Box
       position="absolute"
