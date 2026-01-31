@@ -21,11 +21,13 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
   const { getCurrentPageInfo, onRecordComplete } = deps;
 
   // Page-level caches (cleared on page navigation via onRecordComplete's parent)
+  let cachedLoginFromUrl: string | null = null;
   let cachedStreamerResult: StreamerResult | null = null;
   // undefined = not yet cached, null = cached as no broadcast ID
   let cachedBroadcastId: string | null | undefined;
 
   function clearCache(): void {
+    cachedLoginFromUrl = null;
     cachedStreamerResult = null;
     cachedBroadcastId = undefined;
   }
@@ -66,6 +68,12 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
     pageInfo: PageInfo,
     loginFromUrl: string | null,
   ): Promise<CreateRecordPayload> {
+    // Invalidate cache if streamer changed
+    if (cachedLoginFromUrl !== null && cachedLoginFromUrl !== loginFromUrl) {
+      clearCache();
+    }
+    cachedLoginFromUrl = loginFromUrl;
+
     // Get timestamp and broadcastId using provider chain
     let timestamp: number | null = null;
     let broadcastId: string | null = null;
