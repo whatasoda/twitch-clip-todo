@@ -58,7 +58,13 @@ export function RecordList(props: RecordListProps) {
       >
         <Show
           when={props.filter === "pending"}
-          fallback={<CompletedList records={filteredRecords()} onDelete={props.onDelete} />}
+          fallback={
+            <CompletedList
+              records={filteredRecords()}
+              onUpdateMemo={props.onUpdateMemo}
+              onDelete={props.onDelete}
+            />
+          }
         >
           <For each={groupedRecords()}>
             {(group) => (
@@ -82,11 +88,21 @@ export function RecordList(props: RecordListProps) {
   );
 }
 
-function CompletedList(props: { records: Record[]; onDelete: (id: string) => Promise<unknown> }) {
+function CompletedList(props: {
+  records: Record[];
+  onUpdateMemo: (id: string, memo: string) => Promise<unknown>;
+  onDelete: (id: string) => Promise<unknown>;
+}) {
   return (
     <Box borderWidth="1px" borderColor="border.default" borderRadius="md" overflow="hidden">
       <For each={props.records}>
-        {(record) => <CompletedRecordItem record={record} onDelete={props.onDelete} />}
+        {(record) => (
+          <CompletedRecordItem
+            record={record}
+            onUpdateMemo={props.onUpdateMemo}
+            onDelete={props.onDelete}
+          />
+        )}
       </For>
     </Box>
   );
@@ -94,12 +110,13 @@ function CompletedList(props: { records: Record[]; onDelete: (id: string) => Pro
 
 function CompletedRecordItem(props: {
   record: Record;
+  onUpdateMemo: (id: string, memo: string) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
 }) {
   return (
     <RecordItem
       record={props.record}
-      onUpdateMemo={async () => {}}
+      onUpdateMemo={props.onUpdateMemo}
       onDelete={props.onDelete}
       onOpenClip={async () => {}}
       onFindVod={async () => {}}
