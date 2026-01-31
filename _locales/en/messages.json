@@ -200,6 +200,74 @@
     "message": "Clip Later",
     "description": "Record button text"
   },
+  "onboarding_welcomeTitle": {
+    "message": "Welcome to Twitch Clip Todo",
+    "description": "Welcome card title"
+  },
+  "onboarding_welcomeDescription": {
+    "message": "Bookmark moments during streams and create clips later.",
+    "description": "Welcome card description"
+  },
+  "onboarding_step1": {
+    "message": "Visit a Twitch stream or VOD",
+    "description": "Onboarding step 1"
+  },
+  "onboarding_step2": {
+    "message": "Click \"Clip Later\" or press Alt+Shift+C to record",
+    "description": "Onboarding step 2"
+  },
+  "onboarding_step3": {
+    "message": "Open this popup later to create clips",
+    "description": "Onboarding step 3"
+  },
+  "onboarding_connectBenefit": {
+    "message": "Connect your Twitch account to enable recording moments and automatic VOD linking.",
+    "description": "Explanation of why Twitch connection is needed"
+  },
+  "onboarding_firstRecordHint": {
+    "message": "Click \"Create Clip\" next to a record to open the clip creation page on Twitch.",
+    "description": "Hint after first record"
+  },
+  "onboarding_retentionNotice": {
+    "message": "Records are automatically deleted after 60 days.",
+    "description": "Data retention notice"
+  },
+  "onboarding_twitchToast": {
+    "message": "Clip Later button added. You can also press Alt+Shift+C.",
+    "description": "Toast on first Twitch visit"
+  },
+  "help_title": {
+    "message": "Tips & Info",
+    "description": "Help panel title"
+  },
+  "help_shortcut": {
+    "message": "Press Alt+Shift+C on any stream or VOD page to quickly record a moment.",
+    "description": "Keyboard shortcut tip"
+  },
+  "help_chatButton": {
+    "message": "A bookmark button is also available in the chat input area.",
+    "description": "Chat button tip"
+  },
+  "help_retention": {
+    "message": "Records are automatically deleted after 60 days to keep things tidy.",
+    "description": "Retention period explanation"
+  },
+  "help_connectTwitch": {
+    "message": "Connecting Twitch enables accurate timestamps, automatic VOD linking, and the VOD finder.",
+    "description": "What Connect Twitch enables"
+  },
+  "help_buttonLabel": {
+    "message": "Help",
+    "description": "Help button aria-label"
+  },
+  "help_close": {
+    "message": "Close",
+    "description": "Close help panel"
+  },
+  "toast_authRequired": {
+    "message": "Connect your Twitch account first to record moments.",
+    "description": "Toast when recording while unauthenticated"
+  },
   "toast_notAvailable": {
     "message": "Not available here. Check your saved TODOs from the channel page.",
     "description": "Toast when recording not available"

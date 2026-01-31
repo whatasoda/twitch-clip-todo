@@ -1,14 +1,17 @@
+import type { ChromeStorageAPI } from "../infrastructure/chrome/types";
 import type {
   LinkingService,
   RecordService,
   TwitchService,
   VodDiscoveryService,
 } from "../services";
+import { STORAGE_KEYS } from "../shared/constants";
 import type {
   CreateRecordPayload,
   LinkVodPayload,
   MessageResponse,
   MessageToBackground,
+  OnboardingState,
 } from "../shared/types";
 
 export interface MessageHandlerDeps {
@@ -16,13 +19,14 @@ export interface MessageHandlerDeps {
   linkingService: LinkingService;
   twitchService: TwitchService | null;
   vodDiscoveryService: VodDiscoveryService;
+  storage: ChromeStorageAPI;
 }
 
 export async function handleMessage(
   message: MessageToBackground,
   deps: MessageHandlerDeps,
 ): Promise<MessageResponse<unknown>> {
-  const { recordService, linkingService, twitchService, vodDiscoveryService } = deps;
+  const { recordService, linkingService, twitchService, vodDiscoveryService, storage } = deps;
 
   try {
     switch (message.type) {
@@ -176,6 +180,27 @@ export async function handleMessage(
         const { streamerId } = message.payload as { streamerId: string };
         const count = await recordService.getPendingCount(streamerId);
         return { success: true, data: count };
+      }
+
+      // Onboarding
+      case "GET_ONBOARDING_STATE": {
+        const defaultState: OnboardingState = {
+          hasSeenTwitchToast: false,
+          hasSeenFirstRecordHint: false,
+        };
+        const state = await storage.get<OnboardingState>(STORAGE_KEYS.ONBOARDING);
+        return { success: true, data: state ?? defaultState };
+      }
+
+      case "UPDATE_ONBOARDING_STATE": {
+        const defaultState: OnboardingState = {
+          hasSeenTwitchToast: false,
+          hasSeenFirstRecordHint: false,
+        };
+        const current = await storage.get<OnboardingState>(STORAGE_KEYS.ONBOARDING);
+        const updated = { ...(current ?? defaultState), ...message.payload };
+        await storage.set(STORAGE_KEYS.ONBOARDING, updated);
+        return { success: true, data: updated };
       }
 
       default:

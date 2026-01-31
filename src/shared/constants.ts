@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   TWITCH_AUTH: "twitch_auth",
   STREAM_CACHE: "stream_cache",
   VOD_CACHE: "vod_cache",
+  ONBOARDING: "onboarding",
 } as const;
 
 // Twitch API configuration

@@ -200,6 +200,74 @@
     "message": "後でクリップ",
     "description": "記録ボタンのテキスト"
   },
+  "onboarding_welcomeTitle": {
+    "message": "Twitch Clip Todo へようこそ",
+    "description": "ウェルカムカードのタイトル"
+  },
+  "onboarding_welcomeDescription": {
+    "message": "配信中の気になる瞬間をブックマークして、後でクリップを作れます。",
+    "description": "ウェルカムカードの説明"
+  },
+  "onboarding_step1": {
+    "message": "Twitchの配信やVODページにアクセス",
+    "description": "オンボーディングステップ1"
+  },
+  "onboarding_step2": {
+    "message": "「後でクリップ」ボタンまたは Alt+Shift+C で記録",
+    "description": "オンボーディングステップ2"
+  },
+  "onboarding_step3": {
+    "message": "後でこのポップアップからクリップを作成",
+    "description": "オンボーディングステップ3"
+  },
+  "onboarding_connectBenefit": {
+    "message": "Twitchアカウントを接続すると、瞬間の記録やVODの自動紐づけが可能になります。",
+    "description": "Twitch接続が必要な理由の説明"
+  },
+  "onboarding_firstRecordHint": {
+    "message": "レコードの横にある「クリップ作成」をクリックすると、Twitchのクリップ作成ページに移動します。",
+    "description": "初回記録後のヒント"
+  },
+  "onboarding_retentionNotice": {
+    "message": "記録は60日後に自動的に削除されます。",
+    "description": "データ保持期間の案内"
+  },
+  "onboarding_twitchToast": {
+    "message": "「後でクリップ」ボタンを追加しました。Alt+Shift+C でも記録できます。",
+    "description": "Twitch初回訪問時のトースト"
+  },
+  "help_title": {
+    "message": "ヒントと情報",
+    "description": "ヘルプパネルのタイトル"
+  },
+  "help_shortcut": {
+    "message": "配信やVODページで Alt+Shift+C を押すと、素早く瞬間を記録できます。",
+    "description": "キーボードショートカットのヒント"
+  },
+  "help_chatButton": {
+    "message": "チャット入力エリアにもブックマークボタンがあります。",
+    "description": "チャットボタンのヒント"
+  },
+  "help_retention": {
+    "message": "記録は60日後に自動的に削除されます。",
+    "description": "保持期間の説明"
+  },
+  "help_connectTwitch": {
+    "message": "Twitchを接続すると、正確なタイムスタンプ、VODの自動紐づけ、VOD検索が利用できます。",
+    "description": "Twitch接続で有効になる機能"
+  },
+  "help_buttonLabel": {
+    "message": "ヘルプ",
+    "description": "ヘルプボタンのaria-label"
+  },
+  "help_close": {
+    "message": "閉じる",
+    "description": "ヘルプパネルを閉じる"
+  },
+  "toast_authRequired": {
+    "message": "瞬間を記録するには、まずTwitchアカウントを接続してください。",
+    "description": "未認証時の記録トースト"
+  },
   "toast_notAvailable": {
     "message": "現在は利用できません。チャンネルページから保存済みのTODOを確認できます。",
     "description": "記録できない時のトースト"

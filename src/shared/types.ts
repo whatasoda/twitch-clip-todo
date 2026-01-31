@@ -18,6 +18,11 @@ export interface LinkVodPayload {
   durationSeconds: number;
 }
 
+export interface OnboardingState {
+  hasSeenTwitchToast: boolean;
+  hasSeenFirstRecordHint: boolean;
+}
+
 export type MessageToBackground =
   | { type: "CREATE_RECORD"; payload: CreateRecordPayload }
   | { type: "UPDATE_MEMO"; payload: { id: string; memo: string } }
@@ -42,6 +47,9 @@ export type MessageToBackground =
   | { type: "TWITCH_GET_CURRENT_STREAM_CACHED"; payload: { login: string } }
   | { type: "RUN_VOD_DISCOVERY" }
   | { type: "DISCOVER_VOD_FOR_STREAMER"; payload: { streamerId: string } }
-  | { type: "GET_RECENT_VODS"; payload: { streamerId: string } };
+  | { type: "GET_RECENT_VODS"; payload: { streamerId: string } }
+  // Onboarding
+  | { type: "GET_ONBOARDING_STATE" }
+  | { type: "UPDATE_ONBOARDING_STATE"; payload: Partial<OnboardingState> };
 
 export type MessageResponse<T> = { success: true; data: T } | { success: false; error: string };

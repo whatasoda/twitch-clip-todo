@@ -68,7 +68,28 @@ export const MSG = {
   BUTTON_RECORD_MOMENT_TITLE: "button_recordMomentTitle",
   BUTTON_CLIP_LATER: "button_clipLater",
 
+  // Onboarding
+  ONBOARDING_WELCOME_TITLE: "onboarding_welcomeTitle",
+  ONBOARDING_WELCOME_DESCRIPTION: "onboarding_welcomeDescription",
+  ONBOARDING_STEP1: "onboarding_step1",
+  ONBOARDING_STEP2: "onboarding_step2",
+  ONBOARDING_STEP3: "onboarding_step3",
+  ONBOARDING_CONNECT_BENEFIT: "onboarding_connectBenefit",
+  ONBOARDING_FIRST_RECORD_HINT: "onboarding_firstRecordHint",
+  ONBOARDING_RETENTION_NOTICE: "onboarding_retentionNotice",
+  ONBOARDING_TWITCH_TOAST: "onboarding_twitchToast",
+
+  // Help
+  HELP_TITLE: "help_title",
+  HELP_SHORTCUT: "help_shortcut",
+  HELP_CHAT_BUTTON: "help_chatButton",
+  HELP_RETENTION: "help_retention",
+  HELP_CONNECT_TWITCH: "help_connectTwitch",
+  HELP_BUTTON_LABEL: "help_buttonLabel",
+  HELP_CLOSE: "help_close",
+
   // Toasts
+  TOAST_AUTH_REQUIRED: "toast_authRequired",
   TOAST_NOT_AVAILABLE: "toast_notAvailable",
   TOAST_NO_TIMESTAMP: "toast_noTimestamp",
   TOAST_NO_STREAMER_NAME: "toast_noStreamerName",
