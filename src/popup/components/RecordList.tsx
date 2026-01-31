@@ -65,6 +65,8 @@ export function RecordList(props: RecordListProps) {
               onDelete={props.onDelete}
               onOpenClip={props.onOpenClip}
               onFindVod={props.onFindVod}
+              onGetRecentVods={props.onGetRecentVods}
+              onSelectVod={props.onSelectVod}
             />
           }
         >
@@ -96,6 +98,8 @@ function CompletedList(props: {
   onDelete: (id: string) => Promise<unknown>;
   onOpenClip: (record: Record) => Promise<unknown>;
   onFindVod: (streamerId: string) => Promise<unknown>;
+  onGetRecentVods: (streamerId: string) => Promise<VodMetadata[]>;
+  onSelectVod: (record: Record, vodId: string, offsetSeconds: number) => Promise<void>;
 }) {
   return (
     <Box borderWidth="1px" borderColor="border.default" borderRadius="md" overflow="hidden">
@@ -107,6 +111,8 @@ function CompletedList(props: {
             onDelete={props.onDelete}
             onOpenClip={props.onOpenClip}
             onFindVod={props.onFindVod}
+            onGetRecentVods={props.onGetRecentVods}
+            onSelectVod={props.onSelectVod}
           />
         )}
       </For>
@@ -120,6 +126,8 @@ function CompletedRecordItem(props: {
   onDelete: (id: string) => Promise<unknown>;
   onOpenClip: (record: Record) => Promise<unknown>;
   onFindVod: (streamerId: string) => Promise<unknown>;
+  onGetRecentVods: (streamerId: string) => Promise<VodMetadata[]>;
+  onSelectVod: (record: Record, vodId: string, offsetSeconds: number) => Promise<void>;
 }) {
   return (
     <RecordItem
@@ -128,6 +136,8 @@ function CompletedRecordItem(props: {
       onDelete={props.onDelete}
       onOpenClip={props.onOpenClip}
       onFindVod={props.onFindVod}
+      onGetRecentVods={props.onGetRecentVods}
+      onSelectVod={props.onSelectVod}
       showStreamerName
     />
   );
