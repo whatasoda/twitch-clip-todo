@@ -6,6 +6,7 @@ import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Center, Flex } from "../../styled-system/jsx";
 import { Header, RecordList } from "./components";
 import { FirstRecordHint } from "./components/FirstRecordHint";
+import { HelpPanel } from "./components/HelpPanel";
 import { TabSwitcher, type TabValue } from "./components/TabSwitcher";
 import { WelcomeCard } from "./components/WelcomeCard";
 import { useAuth } from "./hooks/use-auth";
@@ -17,6 +18,7 @@ export default function App() {
   const { pageInfo } = useCurrentTab();
   const { isAuthenticated } = useAuth();
   const { shouldShowFirstRecordHint, dismissFirstRecordHint } = useOnboarding();
+  const [showHelp, setShowHelp] = createSignal(false);
   const {
     updateMemo,
     deleteRecord,
@@ -37,8 +39,12 @@ export default function App() {
   );
 
   return (
-    <Box minH="100vh" bg="bg.canvas" color="fg.default">
-      <Header pageInfo={pageInfo()} showAuth={isAuthenticated()} />
+    <Box minH="100vh" bg="bg.canvas" color="fg.default" position="relative">
+      <Header pageInfo={pageInfo()} showAuth={isAuthenticated()} onHelpClick={() => setShowHelp(true)} />
+
+      <Show when={showHelp()}>
+        <HelpPanel onClose={() => setShowHelp(false)} />
+      </Show>
 
       <Show when={error()}>
         <Box p="4" bg="red.2" color="red.11">

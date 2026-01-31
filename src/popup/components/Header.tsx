@@ -1,4 +1,6 @@
+import { Info } from "lucide-solid";
 import { Badge } from "@/components/ui/badge";
+import { IconButton } from "@/components/ui/icon-button";
 import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Flex, HStack } from "../../../styled-system/jsx";
@@ -35,7 +37,14 @@ export function Header(props: HeaderProps) {
             </Badge>
           )}
         </HStack>
-        {props.showAuth !== false && <AuthButton />}
+        <HStack gap="1">
+          {props.onHelpClick && (
+            <IconButton size="xs" variant="ghost" aria-label={t(MSG.HELP_BUTTON_LABEL)} onClick={props.onHelpClick}>
+              <Info size={16} />
+            </IconButton>
+          )}
+          {props.showAuth !== false && <AuthButton />}
+        </HStack>
       </Flex>
     </Box>
   );
