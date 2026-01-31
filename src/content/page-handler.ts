@@ -26,6 +26,8 @@ export interface PageHandlerDeps {
   onPageChange?: () => void;
 }
 
+let twitchToastShown = false;
+
 export function createPageHandler(deps: PageHandlerDeps) {
   const { onRecord, onOpenPopup, onPageChange } = deps;
 
@@ -44,16 +46,19 @@ export function createPageHandler(deps: PageHandlerDeps) {
       injectChatButton(onRecord);
 
       // Show one-time toast on first Twitch visit
-      getOnboardingState()
-        .then(async (state) => {
-          if (!state.hasSeenTwitchToast) {
-            showToast(t(MSG.ONBOARDING_TWITCH_TOAST), "info");
-            await updateOnboardingState({ hasSeenTwitchToast: true });
-          }
-        })
-        .catch((err) => {
-          console.error("[Twitch Clip Todo] Failed to check onboarding state:", err);
-        });
+      if (!twitchToastShown) {
+        twitchToastShown = true;
+        getOnboardingState()
+          .then(async (state) => {
+            if (!state.hasSeenTwitchToast) {
+              showToast(t(MSG.ONBOARDING_TWITCH_TOAST), "info");
+              await updateOnboardingState({ hasSeenTwitchToast: true });
+            }
+          })
+          .catch((err) => {
+            console.error("[Twitch Clip Todo] Failed to check onboarding state:", err);
+          });
+      }
 
       // Auto-link VODs (requires API for streamerId)
       if (pageInfo.type === "vod" && pageInfo.vodId) {
