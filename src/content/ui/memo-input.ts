@@ -2,6 +2,7 @@ import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
 import { createShadowHost } from "./shadow-dom";
 import { styles } from "./styles";
+import { showToast } from "./toast";
 
 let containerElement: HTMLElement | null = null;
 
@@ -55,7 +56,8 @@ export function showMemoInput(
         saveBtn.disabled = false;
         saveBtn.textContent = t(MSG.COMMON_SAVE);
       })
-      .catch(() => {
+      .catch((error: unknown) => {
+        showToast(error instanceof Error ? error.message : t(MSG.TOAST_RECORD_FAILED), "error");
         hideMemoInput();
       });
   }
