@@ -50,6 +50,9 @@ export const MSG = {
   RECORD_DELETE_ALL_COMPLETED_CONFIRM: "record_deleteAllCompletedConfirm",
   RECORD_ADD_MEMO_PLACEHOLDER: "record_addMemoPlaceholder",
   RECORD_ENTER_MEMO_PLACEHOLDER: "record_enterMemoPlaceholder",
+  RECORD_VOD_DISCOVERY_SUCCESS: "record_vodDiscoverySuccess",
+  RECORD_VOD_DISCOVERY_NO_MATCH: "record_vodDiscoveryNoMatch",
+  RECORD_VOD_DISCOVERY_ERROR: "record_vodDiscoveryError",
 
   // Widget
   WIDGET_PENDING_CLIPS_LABEL: "widget_pendingClipsLabel",
