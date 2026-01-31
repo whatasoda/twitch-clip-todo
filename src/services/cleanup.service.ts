@@ -3,10 +3,12 @@ import type { Settings } from "../core/settings";
 import { DEFAULT_SETTINGS } from "../core/settings";
 import type { ChromeAlarmsAPI, ChromeStorageAPI } from "../infrastructure/chrome";
 import { STORAGE_KEYS } from "../shared/constants";
+import type { CleanupNotification } from "../shared/types";
 
 export interface CleanupServiceDeps {
   storage: ChromeStorageAPI;
   alarms: ChromeAlarmsAPI;
+  onCleanup?: (deletedCount: number) => void;
 }
 
 export interface CleanupService {
@@ -17,7 +19,7 @@ export interface CleanupService {
 const CLEANUP_ALARM_NAME = "cleanup-old-records";
 
 export function createCleanupService(deps: CleanupServiceDeps): CleanupService {
-  const { storage, alarms } = deps;
+  const { storage, alarms, onCleanup } = deps;
 
   return {
     initialize() {
@@ -49,6 +51,11 @@ export function createCleanupService(deps: CleanupServiceDeps): CleanupService {
 
       if (deletedCount > 0) {
         await storage.set(STORAGE_KEYS.RECORDS, store);
+        await storage.set<CleanupNotification>(STORAGE_KEYS.CLEANUP_NOTIFICATION, {
+          count: deletedCount,
+          timestamp: new Date().toISOString(),
+        });
+        onCleanup?.(deletedCount);
       }
 
       return deletedCount;
