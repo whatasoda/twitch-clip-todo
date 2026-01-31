@@ -2,7 +2,7 @@ import type { Record } from "../core/record";
 import type { LiveStreamInfo, StreamerInfo, VodMetadata } from "../services/twitch.service";
 import type { DiscoveryResult } from "../services/vod-discovery.service";
 import { sendMessage } from "../shared/messaging";
-import type { CreateRecordPayload, LinkVodPayload } from "../shared/types";
+import type { CreateRecordPayload, LinkVodPayload, OnboardingState } from "../shared/types";
 
 // Auth status
 
@@ -59,4 +59,16 @@ export async function discoverVodForStreamer(streamerId: string): Promise<Discov
     type: "DISCOVER_VOD_FOR_STREAMER",
     payload: { streamerId },
   });
+}
+
+// Onboarding
+
+export async function getOnboardingState(): Promise<OnboardingState> {
+  return sendMessage<OnboardingState>({ type: "GET_ONBOARDING_STATE" });
+}
+
+export async function updateOnboardingState(
+  updates: Partial<OnboardingState>,
+): Promise<OnboardingState> {
+  return sendMessage<OnboardingState>({ type: "UPDATE_ONBOARDING_STATE", payload: updates });
 }

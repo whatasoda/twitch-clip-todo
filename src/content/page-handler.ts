@@ -1,7 +1,7 @@
 import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
 import type { PageInfo } from "../core/twitch";
-import { getPendingCount, getVodMetadataFromApi, linkVod } from "./messaging";
+import { getOnboardingState, getPendingCount, getVodMetadataFromApi, linkVod, updateOnboardingState } from "./messaging";
 import {
   hideFloatingWidget,
   hideMemoInput,
@@ -36,6 +36,18 @@ export function createPageHandler(deps: PageHandlerDeps) {
       // Inject record buttons
       injectRecordButton(onRecord);
       injectChatButton(onRecord);
+
+      // Show one-time toast on first Twitch visit
+      getOnboardingState()
+        .then(async (state) => {
+          if (!state.hasSeenTwitchToast) {
+            showToast(t(MSG.ONBOARDING_TWITCH_TOAST), "info");
+            await updateOnboardingState({ hasSeenTwitchToast: true });
+          }
+        })
+        .catch((err) => {
+          console.error("[Twitch Clip Todo] Failed to check onboarding state:", err);
+        });
 
       // Auto-link VODs (requires API for streamerId)
       if (pageInfo.type === "vod" && pageInfo.vodId) {
