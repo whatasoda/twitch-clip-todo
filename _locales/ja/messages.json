@@ -187,5 +187,12 @@
   "toast_recordFailed": {
     "message": "記録に失敗しました",
     "description": "記録失敗時のトースト"
+  },
+  "toast_vodLinked": {
+    "message": "$1 件のレコードをこのVODにリンクしました",
+    "description": "VODへの自動リンク時のトースト",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   }
 }

@@ -13,6 +13,8 @@ export function showMemoInput(
 
   const { host, shadow } = createShadowHost("twitch-clips-todo-memo");
 
+  // The backdrop is transparent so it does not block the stream view.
+  // Users can continue watching while entering a memo.
   const backdrop = document.createElement("div");
   backdrop.setAttribute("style", styles.memoInput.backdrop);
 

@@ -1,3 +1,5 @@
+import { t } from "@/shared/i18n";
+import { MSG } from "@/shared/i18n/message-keys";
 import type { PageInfo } from "../core/twitch";
 import { getPendingCount, getVodMetadataFromApi, linkVod } from "./messaging";
 import {
@@ -46,7 +48,7 @@ export function createPageHandler(deps: PageHandlerDeps) {
               durationSeconds: apiVodMeta.durationSeconds,
             });
             if (linked.length > 0) {
-              showToast(`Linked ${linked.length} record(s) to this VOD`, "info");
+              showToast(t(MSG.TOAST_VOD_LINKED, String(linked.length)), "info");
             }
           }
 

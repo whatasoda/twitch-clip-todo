@@ -187,5 +187,12 @@
   "toast_recordFailed": {
     "message": "Failed to record moment",
     "description": "Toast when recording fails"
+  },
+  "toast_vodLinked": {
+    "message": "Linked $1 record(s) to this VOD",
+    "description": "Toast when records are auto-linked to a VOD",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   }
 }

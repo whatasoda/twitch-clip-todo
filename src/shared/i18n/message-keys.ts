@@ -64,6 +64,7 @@ export const MSG = {
   TOAST_RECORDING_CANCELLED: "toast_recordingCancelled",
   TOAST_CANCEL_FAILED: "toast_cancelFailed",
   TOAST_RECORD_FAILED: "toast_recordFailed",
+  TOAST_VOD_LINKED: "toast_vodLinked",
 } as const;
 
 export type MessageKey = (typeof MSG)[keyof typeof MSG];
