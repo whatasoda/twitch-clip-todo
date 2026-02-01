@@ -37,6 +37,23 @@ function createRecordButton(onClick: () => void): HTMLElement {
 }
 
 /**
+ * Known aria-label substrings for Twitch's native clip button across locales.
+ * Uses substring matching (includes), so "Clip" covers en, es, fr, de, it, etc.
+ * Add new entries only for languages where the label does not contain an existing entry.
+ */
+const CLIP_BUTTON_LABELS = [
+  "Clip", // en, es, fr, de, it, nl, and other Latin-script locales
+  "クリップ", // ja
+  "클립", // ko
+  "Clipe", // pt, pt-BR
+  "Klip", // tr, cs, sk
+  "Клип", // ru, uk
+  "คลิป", // th
+  "剪辑", // zh-CN
+  "剪輯", // zh-TW
+];
+
+/**
  * Find Twitch's native clip button by its aria-label.
  * The label varies by locale (e.g., "Clip", "クリップ").
  */
@@ -45,13 +62,7 @@ function findClipButton(): HTMLButtonElement | null {
   return (
     (Array.from(allButtons).find((b) => {
       const label = b.getAttribute("aria-label") || "";
-      // Match common locales for "Clip"
-      return (
-        label.includes("Clip") ||
-        label.includes("クリップ") ||
-        label.includes("클립") ||
-        label.includes("Clipe")
-      );
+      return CLIP_BUTTON_LABELS.some((l) => label.includes(l));
     }) as HTMLButtonElement | null) ?? null
   );
 }
@@ -85,7 +96,7 @@ function tryInjectNextToClipButton(buttonHost: HTMLElement): boolean {
 }
 
 /**
- * Fallback: inject into player controls area.
+ * Primary: inject into player controls area using stable data-a-target selector.
  */
 function injectIntoPlayerControls(buttonHost: HTMLElement): boolean {
   const controlsBar = document.querySelector('[data-a-target="player-controls"]');
@@ -115,22 +126,35 @@ function injectAsFixedPosition(buttonHost: HTMLElement): void {
   document.body.appendChild(buttonHost);
 }
 
+/**
+ * Check whether the button is currently placed adjacent to the clip button.
+ */
+function isAdjacentToClipButton(): boolean {
+  if (!buttonElement) return false;
+  const clipButton = findClipButton();
+  if (!clipButton) return false;
+  // They share the same grandparent when adjacent
+  return buttonElement.parentElement === clipButton.parentElement?.parentElement?.parentElement;
+}
+
 function attemptInjection(onClick: () => void): void {
   if (buttonElement) return;
 
   const button = createRecordButton(onClick);
   buttonElement = button;
 
-  // Try injection strategies in order
-  if (tryInjectNextToClipButton(button)) {
-    return;
-  }
-
+  // Try injection strategies in order of selector stability
+  // 1. Player controls (most stable — uses data-a-target)
   if (injectIntoPlayerControls(button)) {
     return;
   }
 
-  // Final fallback
+  // 2. Next to clip button (best UX position — uses aria-label)
+  if (tryInjectNextToClipButton(button)) {
+    return;
+  }
+
+  // 3. Fixed position fallback
   injectAsFixedPosition(button);
 }
 
@@ -148,29 +172,26 @@ export function injectRecordButton(onClick: () => void): void {
   // Try immediate injection
   attemptInjection(onClick);
 
-  // If button was injected in fixed position (fallback), set up observer to retry
-  const currentButton = buttonElement;
-  if (currentButton && currentButton.style.position === "fixed") {
-    // Set up mutation observer to detect when clip button becomes available
+  // If not adjacent to clip button, set up observer to attempt upgrade
+  if (buttonElement && !isAdjacentToClipButton()) {
+    const isFixedPosition = buttonElement.style.position === "fixed";
+
     observer = new MutationObserver(() => {
       const existingButton = buttonElement;
       if (!existingButton) return;
 
-      // Check if we can now find the clip button
+      // Try to upgrade to clip-adjacent position
       const clipButton = findClipButton();
-      if (clipButton) {
-        // Remove the fixed position button
-        buttonElement = null;
-        existingButton.remove();
+      if (!clipButton) return;
 
-        // Re-attempt injection
-        attemptInjection(onClick);
+      buttonElement = null;
+      existingButton.remove();
+      attemptInjection(onClick);
 
-        // Clean up observer if successful - check the module-level variable
-        if (buttonElement && (buttonElement as HTMLElement).style.position !== "fixed") {
-          observer?.disconnect();
-          observer = null;
-        }
+      // If we achieved clip-adjacent or at least non-fixed, stop observing
+      if (buttonElement && (isAdjacentToClipButton() || !isFixedPosition)) {
+        observer?.disconnect();
+        observer = null;
       }
     });
 
@@ -179,19 +200,19 @@ export function injectRecordButton(onClick: () => void): void {
       subtree: true,
     });
 
-    // Also retry with a timeout as backup
+    // Timeout backup: one more attempt then stop observing
     retryTimeoutId = window.setTimeout(() => {
       const btn = buttonElement;
-      if (!btn || btn.style.position !== "fixed") {
-        return;
+      if (!btn) return;
+
+      // If still in fixed position, try one more time
+      if (btn.style.position === "fixed") {
+        buttonElement = null;
+        btn.remove();
+        attemptInjection(onClick);
       }
 
-      // One more attempt
-      buttonElement = null;
-      btn.remove();
-      attemptInjection(onClick);
-
-      // Clean up observer
+      // Clean up observer regardless
       observer?.disconnect();
       observer = null;
     }, 2000);
