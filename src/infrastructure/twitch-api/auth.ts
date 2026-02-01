@@ -39,6 +39,17 @@ export function createTwitchAuthAPI(): TwitchAuthAPI {
     pollWaiters = [];
   }
 
+  function cleanupPollingState(reason?: string): void {
+    notifyPollWaiters();
+    pollingAbortController = null;
+    currentPollingState = null;
+    if (reason) {
+      chrome.storage.local.set({
+        [STORAGE_KEYS.AUTH_POLLING_STATUS]: { status: "failed", reason },
+      });
+    }
+  }
+
   return {
     async startDeviceAuth(): Promise<DeviceCodeResponse> {
       const response = await fetch("https://id.twitch.tv/oauth2/device", {
@@ -89,72 +100,77 @@ export function createTwitchAuthAPI(): TwitchAuthAPI {
           throw new DOMException("Polling cancelled", "AbortError");
         }
 
-        const response = await fetch("https://id.twitch.tv/oauth2/token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            client_id: TWITCH_CLIENT_ID,
-            device_code: deviceCode,
-            grant_type: "urn:ietf:params:oauth:grant-type:device_code",
-          }),
-          signal,
-        });
+        try {
+          const response = await fetch("https://id.twitch.tv/oauth2/token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+              client_id: TWITCH_CLIENT_ID,
+              device_code: deviceCode,
+              grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+            }),
+            signal,
+          });
 
-        if (response.ok) {
-          const tokenData = await response.json();
-          const token: TwitchAuthToken = {
-            access_token: tokenData.access_token,
-            refresh_token: tokenData.refresh_token,
-            expires_in: tokenData.expires_in,
-            scope: tokenData.scope ?? [],
-            token_type: tokenData.token_type,
-            obtained_at: Date.now(),
-          };
+          if (response.ok) {
+            const tokenData = await response.json();
+            const token: TwitchAuthToken = {
+              access_token: tokenData.access_token,
+              refresh_token: tokenData.refresh_token,
+              expires_in: tokenData.expires_in,
+              scope: tokenData.scope ?? [],
+              token_type: tokenData.token_type,
+              obtained_at: Date.now(),
+            };
 
-          await this.storeToken(token);
-          notifyPollWaiters();
-          pollingAbortController = null;
-          currentPollingState = null;
-          return token;
+            await this.storeToken(token);
+            notifyPollWaiters();
+            pollingAbortController = null;
+            currentPollingState = null;
+            chrome.storage.local.set({
+              [STORAGE_KEYS.AUTH_POLLING_STATUS]: { status: "completed" },
+            });
+            return token;
+          }
+
+          const errorData = await response.json();
+
+          // Handle specific error cases
+          if (errorData.message === "authorization_pending") {
+            // User hasn't authorized yet, continue polling
+            notifyPollWaiters();
+            continue;
+          }
+
+          if (errorData.message === "slow_down") {
+            // Need to slow down polling
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+            notifyPollWaiters();
+            continue;
+          }
+
+          if (errorData.message === "expired_token") {
+            cleanupPollingState("expired_token");
+            throw new Error("Device code expired. Please start again.");
+          }
+
+          if (errorData.message === "access_denied") {
+            cleanupPollingState("access_denied");
+            throw new Error("Authorization denied by user.");
+          }
+
+          // Unknown error
+          cleanupPollingState(errorData.message ?? "unknown_error");
+          throw new Error(`Token polling failed: ${errorData.message ?? response.statusText}`);
+        } catch (err) {
+          if (err instanceof DOMException && err.name === "AbortError") {
+            throw err;
+          }
+          cleanupPollingState("network_error");
+          throw err;
         }
-
-        const errorData = await response.json();
-
-        // Handle specific error cases
-        if (errorData.message === "authorization_pending") {
-          // User hasn't authorized yet, continue polling
-          notifyPollWaiters();
-          continue;
-        }
-
-        if (errorData.message === "slow_down") {
-          // Need to slow down polling
-          await new Promise((resolve) => setTimeout(resolve, 5000));
-          notifyPollWaiters();
-          continue;
-        }
-
-        if (errorData.message === "expired_token") {
-          notifyPollWaiters();
-          pollingAbortController = null;
-          currentPollingState = null;
-          throw new Error("Device code expired. Please start again.");
-        }
-
-        if (errorData.message === "access_denied") {
-          notifyPollWaiters();
-          pollingAbortController = null;
-          currentPollingState = null;
-          throw new Error("Authorization denied by user.");
-        }
-
-        // Unknown error
-        notifyPollWaiters();
-        pollingAbortController = null;
-        currentPollingState = null;
-        throw new Error(`Token polling failed: ${errorData.message ?? response.statusText}`);
       }
 
       throw new DOMException("Polling cancelled", "AbortError");
@@ -167,6 +183,9 @@ export function createTwitchAuthAPI(): TwitchAuthAPI {
       }
       currentPollingState = null;
       notifyPollWaiters();
+      chrome.storage.local.set({
+        [STORAGE_KEYS.AUTH_POLLING_STATUS]: { status: "failed", reason: "cancelled" },
+      });
     },
 
     awaitNextPoll(): Promise<void> {

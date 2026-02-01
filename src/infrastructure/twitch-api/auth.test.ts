@@ -195,6 +195,50 @@ describe("createTwitchAuthAPI", () => {
       // Should not throw
       expect(() => auth.cancelPolling()).not.toThrow();
     });
+
+    it("writes failed status to storage", () => {
+      auth.cancelPolling();
+      expect(chrome.storage.local.set).toHaveBeenCalledWith({
+        auth_polling_status: { status: "failed", reason: "cancelled" },
+      });
+    });
+  });
+
+  describe("pollForToken network error handling", () => {
+    it("cleans up state and notifies waiters on fetch network error", async () => {
+      vi.useFakeTimers();
+      mockFetch.mockRejectedValue(new TypeError("Failed to fetch"));
+
+      const deviceInfo = {
+        userCode: "UC123",
+        verificationUri: "https://id.twitch.tv/activate",
+        expiresIn: 1800,
+      };
+
+      const pollPromise = auth.pollForToken("dc1", 5, deviceInfo).catch((e: Error) => e);
+
+      // Register a waiter before the poll cycle completes
+      const waiterPromise = auth.awaitNextPoll();
+
+      // Advance past the poll interval to trigger the fetch
+      await vi.advanceTimersByTimeAsync(5000);
+
+      const error = await pollPromise;
+      expect(error).toBeInstanceOf(TypeError);
+      expect((error as TypeError).message).toBe("Failed to fetch");
+
+      await expect(waiterPromise).resolves.toBeUndefined();
+
+      // Polling state should be cleaned up
+      expect(auth.getPollingState()).toBeNull();
+
+      // Should have written network_error to storage
+      expect(chrome.storage.local.set).toHaveBeenCalledWith({
+        auth_polling_status: { status: "failed", reason: "network_error" },
+      });
+
+      vi.useRealTimers();
+    });
   });
 
   describe("getPollingState", () => {

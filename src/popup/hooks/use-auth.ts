@@ -74,6 +74,14 @@ export function useAuth() {
     const progress = await getAuthProgress();
     if (!progress) return;
 
+    // Check if auth already completed during getAuthProgress() call
+    const earlyAuthResult = await getAuthStatus();
+    if (earlyAuthResult.isAuthenticated) {
+      setStatus("authenticated");
+      refetch();
+      return;
+    }
+
     // Show loading state (pending without deviceAuth → loading spinner in AuthButton)
     setStatus("pending");
 
@@ -104,8 +112,10 @@ export function useAuth() {
   // Listen for auth token storage changes to detect background polling completion
   onMount(() => {
     const listener = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (status() !== "pending") return;
+
       const authChange = changes[STORAGE_KEYS.TWITCH_AUTH];
-      if (authChange && status() === "pending") {
+      if (authChange) {
         if (authChange.newValue) {
           // Token was stored — auth completed
           setStatus("authenticated");
@@ -116,6 +126,14 @@ export function useAuth() {
           setStatus("idle");
           setDeviceAuth(null);
         }
+        return;
+      }
+
+      const pollingStatusChange = changes[STORAGE_KEYS.AUTH_POLLING_STATUS];
+      if ((pollingStatusChange?.newValue as { status?: string } | undefined)?.status === "failed") {
+        // Background polling failed (expired, denied, network error, etc.)
+        setStatus("idle");
+        setDeviceAuth(null);
       }
     };
     chrome.storage.onChanged.addListener(listener);
