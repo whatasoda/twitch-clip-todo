@@ -23,6 +23,11 @@ export interface OnboardingState {
   hasSeenFirstRecordHint: boolean;
 }
 
+export interface CleanupNotification {
+  count: number;
+  timestamp: string;
+}
+
 export type MessageToBackground =
   | { type: "CREATE_RECORD"; payload: CreateRecordPayload }
   | { type: "UPDATE_MEMO"; payload: { id: string; memo: string } }
@@ -50,6 +55,9 @@ export type MessageToBackground =
   | { type: "GET_RECENT_VODS"; payload: { streamerId: string } }
   // Onboarding
   | { type: "GET_ONBOARDING_STATE" }
-  | { type: "UPDATE_ONBOARDING_STATE"; payload: Partial<OnboardingState> };
+  | { type: "UPDATE_ONBOARDING_STATE"; payload: Partial<OnboardingState> }
+  // Cleanup notification
+  | { type: "GET_CLEANUP_NOTIFICATION" }
+  | { type: "DISMISS_CLEANUP_NOTIFICATION" };
 
 export type MessageResponse<T> = { success: true; data: T } | { success: false; error: string };

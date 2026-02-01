@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronRight, Search, Trash2 } from "lucide-solid";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, onCleanup, Show } from "solid-js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { t } from "@/shared/i18n";
@@ -7,6 +7,7 @@ import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Flex, HStack } from "../../../styled-system/jsx";
 import type { Record } from "../../core/record";
 import type { VodMetadata } from "../../services/twitch.service";
+import type { DiscoveryResult } from "../../services/vod-discovery.service";
 import { RecordItem } from "./RecordItem";
 
 interface StreamerGroupProps {
@@ -17,7 +18,7 @@ interface StreamerGroupProps {
   onDelete: (id: string) => Promise<unknown>;
   onDeleteAll: (streamerId: string) => Promise<unknown>;
   onOpenClip: (record: Record) => Promise<unknown>;
-  onFindVod: (streamerId: string) => Promise<unknown>;
+  onFindVod: (streamerId: string) => Promise<DiscoveryResult>;
   onGetRecentVods: (streamerId: string) => Promise<VodMetadata[]>;
   onSelectVod: (record: Record, vodId: string, offsetSeconds: number) => Promise<void>;
 }
@@ -25,15 +26,23 @@ interface StreamerGroupProps {
 export function StreamerGroup(props: StreamerGroupProps) {
   const [isOpen, setIsOpen] = createSignal(true);
   const [isLoading, setIsLoading] = createSignal(false);
+  const [discoveryResult, setDiscoveryResult] = createSignal<DiscoveryResult | null>(null);
+  let dismissTimer: ReturnType<typeof setTimeout> | undefined;
   const pendingCount = () => props.records.filter((r) => !r.completedAt).length;
   const unlinkedCount = () =>
     props.records.filter((r) => r.vodId === null && r.broadcastId !== null).length;
 
+  onCleanup(() => clearTimeout(dismissTimer));
+
   const handleFindVods = async (e: Event) => {
     e.stopPropagation();
     setIsLoading(true);
+    setDiscoveryResult(null);
+    clearTimeout(dismissTimer);
     try {
-      await props.onFindVod(props.streamerId);
+      const result = await props.onFindVod(props.streamerId);
+      setDiscoveryResult(result);
+      dismissTimer = setTimeout(() => setDiscoveryResult(null), 5000);
     } finally {
       setIsLoading(false);
     }
@@ -84,6 +93,23 @@ export function StreamerGroup(props: StreamerGroupProps) {
           </Show>
         </HStack>
       </Flex>
+      <Show when={discoveryResult()}>
+        {(result) => (
+          <Box
+            px="3"
+            py="2"
+            fontSize="xs"
+            color={result().error ? "red.11" : result().linkedCount > 0 ? "green.11" : "fg.muted"}
+            bg={result().error ? "red.2" : result().linkedCount > 0 ? "green.2" : "bg.muted"}
+          >
+            {result().error
+              ? t(MSG.RECORD_VOD_DISCOVERY_ERROR)
+              : result().linkedCount > 0
+                ? t(MSG.RECORD_VOD_DISCOVERY_SUCCESS, String(result().linkedCount))
+                : t(MSG.RECORD_VOD_DISCOVERY_NO_MATCH)}
+          </Box>
+        )}
+      </Show>
       <Show when={isOpen()}>
         <For each={props.records}>
           {(record) => (

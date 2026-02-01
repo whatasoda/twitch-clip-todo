@@ -19,6 +19,10 @@ const linkingService = createLinkingService({ recordService });
 const cleanupService = createCleanupService({
   storage: chromeAPI.storage,
   alarms: chromeAPI.alarms,
+  onCleanup: (deletedCount) => {
+    chrome.action.setBadgeText({ text: String(deletedCount) });
+    chrome.action.setBadgeBackgroundColor({ color: "#9147ff" });
+  },
 });
 
 // Initialize Twitch API services (only if CLIENT_ID is configured)

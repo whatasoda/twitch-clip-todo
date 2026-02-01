@@ -153,6 +153,21 @@
     "message": "メモを入力...",
     "description": "メモ入力のプレースホルダー"
   },
+  "record_vodDiscoverySuccess": {
+    "message": "$1 件のレコードを VOD にリンクしました",
+    "description": "VOD検索成功時のメッセージ",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "record_vodDiscoveryNoMatch": {
+    "message": "VOD がまだ見つかりません。配信終了後にもう一度試してください",
+    "description": "VOD が見つからなかった時のメッセージ"
+  },
+  "record_vodDiscoveryError": {
+    "message": "VOD の検索に失敗しました",
+    "description": "VOD検索エラー時のメッセージ"
+  },
   "widget_pendingClipsLabel": {
     "message": "$1 件のクリップ待ち - クリックでパネルを開く",
     "description": "ウィジェットのラベル（件数付き）",
@@ -235,6 +250,13 @@
   "onboarding_twitchToast": {
     "message": "「後でクリップ」ボタンを追加しました。Alt+Shift+C でも記録できます。",
     "description": "Twitch初回訪問時のトースト"
+  },
+  "cleanup_bannerMessage": {
+    "message": "$1 件の古いレコードが自動削除されました",
+    "description": "自動クリーンアップ後に表示されるバナーメッセージ",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   },
   "help_title": {
     "message": "ヒントと情報",

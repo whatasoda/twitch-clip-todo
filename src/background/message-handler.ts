@@ -7,6 +7,7 @@ import type {
 } from "../services";
 import { STORAGE_KEYS } from "../shared/constants";
 import type {
+  CleanupNotification,
   CreateRecordPayload,
   LinkVodPayload,
   MessageResponse,
@@ -201,6 +202,20 @@ export async function handleMessage(
         const updated = { ...(current ?? defaultState), ...message.payload };
         await storage.set(STORAGE_KEYS.ONBOARDING, updated);
         return { success: true, data: updated };
+      }
+
+      // Cleanup notification
+      case "GET_CLEANUP_NOTIFICATION": {
+        const notification = await storage.get<CleanupNotification>(
+          STORAGE_KEYS.CLEANUP_NOTIFICATION,
+        );
+        return { success: true, data: notification };
+      }
+
+      case "DISMISS_CLEANUP_NOTIFICATION": {
+        await storage.remove(STORAGE_KEYS.CLEANUP_NOTIFICATION);
+        await chrome.action.setBadgeText({ text: "" });
+        return { success: true, data: null };
       }
 
       default:

@@ -5,12 +5,14 @@ import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Center, Flex } from "../../styled-system/jsx";
 import { Header, RecordList } from "./components";
+import { CleanupBanner } from "./components/CleanupBanner";
 import { FirstRecordHint } from "./components/FirstRecordHint";
 import { HelpPanel } from "./components/HelpPanel";
 import { TabSwitcher, type TabValue } from "./components/TabSwitcher";
 import { WelcomeCard } from "./components/WelcomeCard";
 import { useCurrentTab, useRecordActions, useRecords } from "./hooks";
 import { useAuth } from "./hooks/use-auth";
+import { useCleanupNotification } from "./hooks/use-cleanup-notification";
 import { useOnboarding } from "./hooks/use-onboarding";
 
 export default function App() {
@@ -18,6 +20,8 @@ export default function App() {
   const { pageInfo } = useCurrentTab();
   const { isAuthenticated } = useAuth();
   const { shouldShowFirstRecordHint, dismissFirstRecordHint } = useOnboarding();
+  const { notification: cleanupNotification, dismissNotification: dismissCleanup } =
+    useCleanupNotification();
   const [showHelp, setShowHelp] = createSignal(false);
   const {
     updateMemo,
@@ -54,6 +58,10 @@ export default function App() {
         <Box p="4" bg="red.2" color="red.11">
           {t(MSG.COMMON_ERROR)}: {error()?.message}
         </Box>
+      </Show>
+
+      <Show when={cleanupNotification()?.count}>
+        {(count) => <CleanupBanner count={count()} onDismiss={dismissCleanup} />}
       </Show>
 
       <Show when={isAuthenticated()} fallback={<WelcomeCard />}>

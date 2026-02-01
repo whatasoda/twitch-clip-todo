@@ -153,6 +153,21 @@
     "message": "Enter memo...",
     "description": "Memo input placeholder"
   },
+  "record_vodDiscoverySuccess": {
+    "message": "Linked $1 record(s) to VOD",
+    "description": "Success message after finding VOD",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "record_vodDiscoveryNoMatch": {
+    "message": "No VOD found yet. Try again after the stream ends.",
+    "description": "Message when no VOD matches are found"
+  },
+  "record_vodDiscoveryError": {
+    "message": "Failed to search for VOD",
+    "description": "Error message when VOD discovery fails"
+  },
   "widget_pendingClipsLabel": {
     "message": "$1 pending clips - Click to open popup",
     "description": "Widget label with pending count",
@@ -235,6 +250,13 @@
   "onboarding_twitchToast": {
     "message": "Clip Later button added. You can also press Alt+Shift+C.",
     "description": "Toast on first Twitch visit"
+  },
+  "cleanup_bannerMessage": {
+    "message": "$1 old record(s) were automatically cleaned up",
+    "description": "Banner message shown after automatic cleanup",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   },
   "help_title": {
     "message": "Tips & Info",

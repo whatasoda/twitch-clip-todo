@@ -11,7 +11,7 @@ Users can capture interesting moments with a single action without interrupting 
 - No authentication required
 - Works with both live streams and VODs
 - Quick recording via keyboard shortcut or button
-- Side Panel for managing records
+- Popup for managing records
 - Automatic VOD linking for live stream recordings (no API needed)
 - Automatic cleanup after 60 days
 
@@ -53,7 +53,7 @@ Users can capture interesting moments with a single action without interrupting 
 
 **Acceptance Criteria:**
 
-2.1. The system shall display records in the Side Panel.
+2.1. The system shall display records in the Popup.
 
 2.2. The system shall group records by streamer.
 
@@ -150,20 +150,20 @@ Users can capture interesting moments with a single action without interrupting 
 
 7.4. The system shall allow customizing the keyboard shortcut.
 
-7.5. The system shall display current stream/VOD info in the Side Panel header.
+7.5. The system shall display current stream/VOD info in the Popup header.
 
 7.6. When the user visits a streamer's channel with pending records, the system shall display an indicator on the page.
 
 7.7. The system shall show the pending record count on the indicator.
 
-7.8. When the user clicks the indicator, the system shall open the Side Panel.
+7.8. When the user clicks the indicator, the system shall open the Popup.
 
 ---
 
 ## Technical Constraints
 
 - Chrome Manifest V3 compliant
-- Side Panel API requires Chrome 114+
+- Popup API (chrome.action.openPopup) requires Chrome 127+
 - No Twitch API dependency (architecture supports future integration)
 - Timestamps extracted via DOM queries
 

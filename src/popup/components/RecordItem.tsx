@@ -9,8 +9,8 @@ import { MSG } from "@/shared/i18n/message-keys";
 import { Box, Flex, HStack } from "../../../styled-system/jsx";
 import type { Record } from "../../core/record";
 import { formatTimestamp } from "../../core/twitch";
-
 import type { VodMetadata } from "../../services/twitch.service";
+import type { DiscoveryResult } from "../../services/vod-discovery.service";
 import { VodPicker } from "./VodPicker";
 
 interface RecordItemProps {
@@ -18,7 +18,7 @@ interface RecordItemProps {
   onUpdateMemo: (id: string, memo: string) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
   onOpenClip: (record: Record) => Promise<unknown>;
-  onFindVod: (streamerId: string) => Promise<unknown>;
+  onFindVod: (streamerId: string) => Promise<DiscoveryResult>;
   onGetRecentVods?: (streamerId: string) => Promise<VodMetadata[]>;
   onSelectVod?: (record: Record, vodId: string, offsetSeconds: number) => Promise<void>;
   showStreamerName?: boolean;
