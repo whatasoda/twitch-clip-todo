@@ -90,6 +90,13 @@ export async function handleMessage(
         return { success: true, data: progress };
       }
 
+      case "TWITCH_AWAIT_NEXT_POLL": {
+        if (twitchService) {
+          await twitchService.awaitNextPoll();
+        }
+        return { success: true, data: null };
+      }
+
       case "TWITCH_CANCEL_AUTH": {
         if (!twitchService) {
           return { success: false, error: "Twitch service not initialized" };

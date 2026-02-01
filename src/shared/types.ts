@@ -42,6 +42,7 @@ export type MessageToBackground =
       };
     }
   | { type: "TWITCH_GET_AUTH_PROGRESS" }
+  | { type: "TWITCH_AWAIT_NEXT_POLL" }
   | { type: "TWITCH_CANCEL_AUTH" }
   | { type: "TWITCH_LOGOUT" }
   | { type: "TWITCH_GET_STREAMER_INFO"; payload: { login: string } }

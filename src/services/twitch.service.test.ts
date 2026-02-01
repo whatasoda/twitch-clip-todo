@@ -16,6 +16,7 @@ function createMockAuth(): { [K in keyof TwitchAuthAPI]: Mock } {
     pollForToken: vi.fn(),
     cancelPolling: vi.fn(),
     getPollingState: vi.fn(),
+    awaitNextPoll: vi.fn(),
     refreshToken: vi.fn(),
     revokeToken: vi.fn(),
     getStoredToken: vi.fn(),
@@ -138,6 +139,12 @@ describe("createTwitchService", () => {
     it("getAuthProgress returns null when not polling", () => {
       auth.getPollingState.mockReturnValue(null);
       expect(service.getAuthProgress()).toBeNull();
+    });
+
+    it("awaitNextPoll delegates to auth.awaitNextPoll", async () => {
+      auth.awaitNextPoll.mockResolvedValue(undefined);
+      await service.awaitNextPoll();
+      expect(auth.awaitNextPoll).toHaveBeenCalled();
     });
 
     it("cancelAuth calls auth.cancelPolling", () => {

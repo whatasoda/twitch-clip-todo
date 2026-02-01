@@ -208,4 +208,36 @@ describe("createTwitchAuthAPI", () => {
       expect(auth.getPollingState()).toBeNull();
     });
   });
+
+  describe("awaitNextPoll", () => {
+    it("resolves immediately when no polling is active", async () => {
+      await expect(auth.awaitNextPoll()).resolves.toBeUndefined();
+    });
+
+    it("resolves when cancelPolling is called", async () => {
+      // Start polling (will hang on the interval sleep)
+      mockFetch.mockResolvedValue(mockJsonResponse({ message: "authorization_pending" }, false));
+
+      const deviceInfo = {
+        userCode: "UC123",
+        verificationUri: "https://id.twitch.tv/activate",
+        expiresIn: 1800,
+      };
+
+      // Start polling but don't await it (it would block)
+      const pollPromise = auth.pollForToken("dc1", 5, deviceInfo).catch(() => {});
+
+      // Wait a tick for polling to start
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // awaitNextPoll should be pending
+      const waiterPromise = auth.awaitNextPoll();
+
+      // Cancel polling — should resolve the waiter
+      auth.cancelPolling();
+
+      await expect(waiterPromise).resolves.toBeUndefined();
+      await pollPromise;
+    });
+  });
 });

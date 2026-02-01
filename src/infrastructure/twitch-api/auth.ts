@@ -18,6 +18,7 @@ export interface TwitchAuthAPI {
   cancelPolling(): void;
 
   getPollingState(): PollingState | null;
+  awaitNextPoll(): Promise<void>;
 
   // Token management
   refreshToken(refreshToken: string): Promise<TwitchAuthToken>;
@@ -31,6 +32,12 @@ export interface TwitchAuthAPI {
 export function createTwitchAuthAPI(): TwitchAuthAPI {
   let pollingAbortController: AbortController | null = null;
   let currentPollingState: PollingState | null = null;
+  let pollWaiters: Array<() => void> = [];
+
+  function notifyPollWaiters(): void {
+    for (const resolve of pollWaiters) resolve();
+    pollWaiters = [];
+  }
 
   return {
     async startDeviceAuth(): Promise<DeviceCodeResponse> {
@@ -107,6 +114,7 @@ export function createTwitchAuthAPI(): TwitchAuthAPI {
           };
 
           await this.storeToken(token);
+          notifyPollWaiters();
           pollingAbortController = null;
           currentPollingState = null;
           return token;
@@ -117,28 +125,33 @@ export function createTwitchAuthAPI(): TwitchAuthAPI {
         // Handle specific error cases
         if (errorData.message === "authorization_pending") {
           // User hasn't authorized yet, continue polling
+          notifyPollWaiters();
           continue;
         }
 
         if (errorData.message === "slow_down") {
           // Need to slow down polling
           await new Promise((resolve) => setTimeout(resolve, 5000));
+          notifyPollWaiters();
           continue;
         }
 
         if (errorData.message === "expired_token") {
+          notifyPollWaiters();
           pollingAbortController = null;
           currentPollingState = null;
           throw new Error("Device code expired. Please start again.");
         }
 
         if (errorData.message === "access_denied") {
+          notifyPollWaiters();
           pollingAbortController = null;
           currentPollingState = null;
           throw new Error("Authorization denied by user.");
         }
 
         // Unknown error
+        notifyPollWaiters();
         pollingAbortController = null;
         currentPollingState = null;
         throw new Error(`Token polling failed: ${errorData.message ?? response.statusText}`);
@@ -153,6 +166,14 @@ export function createTwitchAuthAPI(): TwitchAuthAPI {
         pollingAbortController = null;
       }
       currentPollingState = null;
+      notifyPollWaiters();
+    },
+
+    awaitNextPoll(): Promise<void> {
+      if (!pollingAbortController) return Promise.resolve();
+      return new Promise<void>((resolve) => {
+        pollWaiters.push(resolve);
+      });
     },
 
     getPollingState(): PollingState | null {

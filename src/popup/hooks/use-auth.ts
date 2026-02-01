@@ -38,6 +38,10 @@ async function getAuthProgress(): Promise<PollingState | null> {
   return sendMessage<PollingState | null>({ type: "TWITCH_GET_AUTH_PROGRESS" });
 }
 
+async function awaitNextPoll(): Promise<void> {
+  await sendMessage<null>({ type: "TWITCH_AWAIT_NEXT_POLL" });
+}
+
 async function cancelAuth(): Promise<void> {
   await sendMessage<null>({ type: "TWITCH_CANCEL_AUTH" });
 }
@@ -68,12 +72,32 @@ export function useAuth() {
   // Restore pending auth state from background if polling is in progress
   onMount(async () => {
     const progress = await getAuthProgress();
-    if (progress) {
-      setStatus("pending");
+    if (!progress) return;
+
+    // Show loading state (pending without deviceAuth → loading spinner in AuthButton)
+    setStatus("pending");
+
+    // Wait for the background's next poll cycle to complete
+    await awaitNextPoll();
+
+    // Re-check: did auth complete during the wait?
+    const authResult = await getAuthStatus();
+    if (authResult.isAuthenticated) {
+      setStatus("authenticated");
+      refetch();
+      return;
+    }
+
+    // Still not authenticated — show the device code and link
+    const currentProgress = await getAuthProgress();
+    if (currentProgress) {
       setDeviceAuth({
-        userCode: progress.userCode,
-        verificationUri: progress.verificationUri,
+        userCode: currentProgress.userCode,
+        verificationUri: currentProgress.verificationUri,
       });
+    } else {
+      // Polling ended (expired/error) during wait
+      setStatus("idle");
     }
   });
 

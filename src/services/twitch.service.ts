@@ -44,6 +44,7 @@ export interface TwitchService {
     deviceInfo: { userCode: string; verificationUri: string; expiresIn: number },
   ): Promise<TwitchAuthToken>;
   getAuthProgress(): PollingState | null;
+  awaitNextPoll(): Promise<void>;
   cancelAuth(): void;
   logout(): Promise<void>;
   getStreamerInfo(login: string): Promise<StreamerInfo | null>;
@@ -120,6 +121,10 @@ export function createTwitchService(deps: TwitchServiceDeps): TwitchService {
 
     getAuthProgress(): PollingState | null {
       return auth.getPollingState();
+    },
+
+    awaitNextPoll(): Promise<void> {
+      return auth.awaitNextPoll();
     },
 
     cancelAuth(): void {
