@@ -1,4 +1,5 @@
 import { TWITCH_CLIENT_ID } from "../../shared/constants";
+import { logger } from "../../shared/logger";
 import type { TwitchAuthAPI } from "./auth";
 import { TwitchApiError, type TwitchApiResponse } from "./types";
 
@@ -39,8 +40,8 @@ export function createTwitchApiClient(deps: TwitchApiClientDeps): TwitchApiClien
       try {
         const newToken = await auth.refreshToken(token.refresh_token);
         return newToken.access_token;
-      } catch {
-        // Refresh failed, need to re-authenticate
+      } catch (error) {
+        logger.warn("Token refresh failed:", error);
         await auth.clearToken();
         return null;
       }
@@ -99,7 +100,10 @@ export function createTwitchApiClient(deps: TwitchApiClientDeps): TwitchApiClien
       }
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch((e: unknown) => {
+          logger.debug("Error response body parse failed:", e);
+          return {};
+        });
         throw new TwitchApiError(
           response.status,
           errorData.message ?? response.statusText,
