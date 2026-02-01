@@ -1,3 +1,4 @@
+import type { ZodType } from "zod";
 import type { ChromeStorageAPI } from "../infrastructure/chrome/types";
 import type {
   LinkingService,
@@ -6,10 +7,20 @@ import type {
   VodDiscoveryService,
 } from "../services";
 import { STORAGE_KEYS } from "../shared/constants";
+import {
+  createRecordPayloadSchema,
+  getRecordsPayloadSchema,
+  idPayloadSchema,
+  linkVodPayloadSchema,
+  loginPayloadSchema,
+  memoPayloadSchema,
+  onboardingStateSchema,
+  pollTokenPayloadSchema,
+  streamerIdPayloadSchema,
+  vodIdPayloadSchema,
+} from "../shared/message-schemas";
 import type {
   CleanupNotification,
-  CreateRecordPayload,
-  LinkVodPayload,
   MessageResponse,
   MessageToBackground,
   OnboardingState,
@@ -21,6 +32,17 @@ export interface MessageHandlerDeps {
   twitchService: TwitchService | null;
   vodDiscoveryService: VodDiscoveryService;
   storage: ChromeStorageAPI;
+}
+
+function validatePayload<T extends ZodType>(
+  schema: T,
+  data: unknown,
+): MessageResponse<never> | { success: true; data: T["_output"] } {
+  const result = schema.safeParse(data);
+  if (!result.success) {
+    return { success: false, error: `Invalid payload: ${result.error.message}` };
+  }
+  return { success: true, data: result.data };
 }
 
 export async function handleMessage(
@@ -49,8 +71,12 @@ export async function handleMessage(
         if (!twitchService) {
           return { success: false, error: "Twitch service not initialized" };
         }
-        const { deviceCode, interval } = message.payload;
-        const token = await twitchService.pollForToken(deviceCode, interval);
+        const parsed = validatePayload(pollTokenPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const token = await twitchService.pollForToken(
+          parsed.data.deviceCode,
+          parsed.data.interval,
+        );
         return { success: true, data: token };
       }
 
@@ -74,8 +100,9 @@ export async function handleMessage(
         if (!twitchService) {
           return { success: true, data: null };
         }
-        const { login } = message.payload as { login: string };
-        const info = await twitchService.getStreamerInfo(login);
+        const parsed = validatePayload(loginPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const info = await twitchService.getStreamerInfo(parsed.data.login);
         return { success: true, data: info };
       }
 
@@ -83,8 +110,9 @@ export async function handleMessage(
         if (!twitchService) {
           return { success: true, data: null };
         }
-        const { vodId } = message.payload as { vodId: string };
-        const metadata = await twitchService.getVodMetadata(vodId);
+        const parsed = validatePayload(vodIdPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const metadata = await twitchService.getVodMetadata(parsed.data.vodId);
         return { success: true, data: metadata };
       }
 
@@ -92,8 +120,9 @@ export async function handleMessage(
         if (!twitchService) {
           return { success: true, data: null };
         }
-        const { login } = message.payload as { login: string };
-        const stream = await twitchService.getCurrentStream(login);
+        const parsed = validatePayload(loginPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const stream = await twitchService.getCurrentStream(parsed.data.login);
         return { success: true, data: stream };
       }
 
@@ -101,8 +130,9 @@ export async function handleMessage(
         if (!twitchService) {
           return { success: true, data: null };
         }
-        const { login } = message.payload as { login: string };
-        const stream = await twitchService.getCurrentStreamCached(login);
+        const parsed = validatePayload(loginPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const stream = await twitchService.getCurrentStreamCached(parsed.data.login);
         return { success: true, data: stream };
       }
 
@@ -112,8 +142,9 @@ export async function handleMessage(
       }
 
       case "DISCOVER_VOD_FOR_STREAMER": {
-        const { streamerId } = message.payload as { streamerId: string };
-        const result = await vodDiscoveryService.discoverAndLinkForStreamer(streamerId);
+        const parsed = validatePayload(streamerIdPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const result = await vodDiscoveryService.discoverAndLinkForStreamer(parsed.data.streamerId);
         return { success: true, data: result };
       }
 
@@ -121,8 +152,9 @@ export async function handleMessage(
         if (!twitchService) {
           return { success: true, data: [] };
         }
-        const { streamerId } = message.payload as { streamerId: string };
-        const streamerInfo = await twitchService.getStreamerInfo(streamerId);
+        const parsed = validatePayload(streamerIdPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const streamerInfo = await twitchService.getStreamerInfo(parsed.data.streamerId);
         if (!streamerInfo) {
           return { success: true, data: [] };
         }
@@ -131,39 +163,46 @@ export async function handleMessage(
       }
 
       case "CREATE_RECORD": {
-        const record = await recordService.create(message.payload as CreateRecordPayload);
+        const parsed = validatePayload(createRecordPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const record = await recordService.create(parsed.data);
         return { success: true, data: record };
       }
 
       case "GET_RECORDS": {
-        const payload = message.payload as { streamerId?: string } | undefined;
-        const records = payload?.streamerId
-          ? await recordService.getByStreamerId(payload.streamerId)
+        const parsed = validatePayload(getRecordsPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const records = parsed.data?.streamerId
+          ? await recordService.getByStreamerId(parsed.data.streamerId)
           : await recordService.getAll();
         return { success: true, data: records };
       }
 
       case "UPDATE_MEMO": {
-        const { id, memo } = message.payload as { id: string; memo: string };
-        const record = await recordService.updateMemo(id, memo);
+        const parsed = validatePayload(memoPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const record = await recordService.updateMemo(parsed.data.id, parsed.data.memo);
         return { success: true, data: record };
       }
 
       case "MARK_COMPLETED": {
-        const { id } = message.payload as { id: string };
-        const record = await recordService.markCompleted(id);
+        const parsed = validatePayload(idPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const record = await recordService.markCompleted(parsed.data.id);
         return { success: true, data: record };
       }
 
       case "DELETE_RECORD": {
-        const { id } = message.payload as { id: string };
-        await recordService.delete(id);
+        const parsed = validatePayload(idPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        await recordService.delete(parsed.data.id);
         return { success: true, data: null };
       }
 
       case "DELETE_RECORDS_BY_STREAMER": {
-        const { streamerId } = message.payload as { streamerId: string };
-        const deleted = await recordService.deleteByStreamerId(streamerId);
+        const parsed = validatePayload(streamerIdPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const deleted = await recordService.deleteByStreamerId(parsed.data.streamerId);
         return { success: true, data: deleted };
       }
 
@@ -173,13 +212,16 @@ export async function handleMessage(
       }
 
       case "LINK_VOD": {
-        const records = await linkingService.linkVod(message.payload as LinkVodPayload);
+        const parsed = validatePayload(linkVodPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const records = await linkingService.linkVod(parsed.data);
         return { success: true, data: records };
       }
 
       case "GET_PENDING_COUNT": {
-        const { streamerId } = message.payload as { streamerId: string };
-        const count = await recordService.getPendingCount(streamerId);
+        const parsed = validatePayload(streamerIdPayloadSchema, message.payload);
+        if (!parsed.success) return parsed;
+        const count = await recordService.getPendingCount(parsed.data.streamerId);
         return { success: true, data: count };
       }
 
@@ -199,7 +241,9 @@ export async function handleMessage(
           hasSeenFirstRecordHint: false,
         };
         const current = await storage.get<OnboardingState>(STORAGE_KEYS.ONBOARDING);
-        const updated = { ...(current ?? defaultState), ...message.payload };
+        const parsed = validatePayload(onboardingStateSchema.partial(), message.payload);
+        if (!parsed.success) return parsed;
+        const updated = { ...(current ?? defaultState), ...parsed.data };
         await storage.set(STORAGE_KEYS.ONBOARDING, updated);
         return { success: true, data: updated };
       }

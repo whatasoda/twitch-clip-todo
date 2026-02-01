@@ -1,5 +1,6 @@
 import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
+import { logger } from "@/shared/logger";
 import type { PageInfo } from "../core/twitch";
 import {
   getOnboardingState,
@@ -56,7 +57,7 @@ export function createPageHandler(deps: PageHandlerDeps) {
             }
           })
           .catch((err) => {
-            console.error("[Twitch Clip Todo] Failed to check onboarding state:", err);
+            logger.error("Failed to check onboarding state:", err);
           });
       }
 
@@ -87,7 +88,7 @@ export function createPageHandler(deps: PageHandlerDeps) {
                 const count = await getPendingCount(streamerId);
                 showFloatingWidget(count, onOpenPopup);
               } catch (err) {
-                console.error("[Twitch Clip Todo] Failed to get pending count for VOD:", err);
+                logger.error("Failed to get pending count for VOD:", err);
                 showFloatingWidgetError(tryShowVodWidget);
               }
             };
@@ -95,7 +96,7 @@ export function createPageHandler(deps: PageHandlerDeps) {
             tryShowVodWidget();
           }
         } catch (error) {
-          console.error("[Twitch Clip Todo] VOD linking failed:", error);
+          logger.error("VOD linking failed:", error);
         }
       }
     }
@@ -109,7 +110,7 @@ export function createPageHandler(deps: PageHandlerDeps) {
           const count = await getPendingCount(streamerId);
           showFloatingWidget(count, onOpenPopup);
         } catch (error) {
-          console.error("[Twitch Clip Todo] Failed to get pending count:", error);
+          logger.error("Failed to get pending count:", error);
           showFloatingWidgetError(tryShowWidget);
         }
       };
@@ -126,7 +127,7 @@ export function createPageHandler(deps: PageHandlerDeps) {
         const count = await getPendingCount(streamerId);
         showFloatingWidget(count, onOpenPopup);
       } catch (error) {
-        console.error("[Twitch Clip Todo] Failed to refresh floating widget:", error);
+        logger.error("Failed to refresh floating widget:", error);
         showFloatingWidgetError(tryRefresh);
       }
     };

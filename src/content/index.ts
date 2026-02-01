@@ -1,10 +1,11 @@
+import { logger } from "@/shared/logger";
 import { getCurrentPageInfo, setupNavigationListener } from "./detector";
 import { createPageHandler } from "./page-handler";
 import { createRecordHandler } from "./record-handler";
 
 function openPopup(): void {
   chrome.runtime.sendMessage({ type: "OPEN_POPUP" }).catch((error) => {
-    console.error("[Twitch Clip Todo] Failed to open popup:", error);
+    logger.error("Failed to open popup:", error);
   });
 }
 
@@ -32,4 +33,4 @@ chrome.runtime.onMessage.addListener((message) => {
 // Initialize
 setupNavigationListener(pageHandler.handlePageChange);
 
-console.log("[Twitch Clip Todo] Content script initialized");
+logger.info("Content script initialized");

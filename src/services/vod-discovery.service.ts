@@ -1,5 +1,6 @@
 import type { ChromeAlarmsAPI } from "../infrastructure/chrome/types";
 import { VOD_DISCOVERY } from "../shared/constants";
+import { logger } from "../shared/logger";
 import type { LinkingService } from "./linking.service";
 import type { RecordService } from "./record.service";
 import type { TwitchService } from "./twitch.service";
@@ -48,7 +49,7 @@ export function createVodDiscoveryService(deps: VodDiscoveryServiceDeps): VodDis
       alarms.onAlarm.addListener((alarm) => {
         if (alarm.name === VOD_DISCOVERY_ALARM) {
           this.runDiscovery().catch((error) => {
-            console.error("[Twitch Clip Todo] VOD discovery failed:", error);
+            logger.error("VOD discovery failed:", error);
           });
         }
       });
@@ -56,7 +57,7 @@ export function createVodDiscoveryService(deps: VodDiscoveryServiceDeps): VodDis
       // Run initial discovery after a short delay
       setTimeout(() => {
         this.runDiscovery().catch((error) => {
-          console.error("[Twitch Clip Todo] Initial VOD discovery failed:", error);
+          logger.error("Initial VOD discovery failed:", error);
         });
       }, 5000);
     },

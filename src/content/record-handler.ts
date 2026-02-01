@@ -1,5 +1,6 @@
 import { t } from "@/shared/i18n";
 import { MSG } from "@/shared/i18n/message-keys";
+import { logger } from "@/shared/logger";
 import type { PageInfo } from "../core/twitch";
 import type { CreateRecordPayload } from "../shared/types";
 import { checkAuthStatus, createRecord } from "./messaging";
@@ -62,7 +63,7 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
           onRecordComplete();
         } catch (error) {
           showToast(t(MSG.TOAST_RECORD_FAILED), "error");
-          console.error("[Twitch Clip Todo]", error);
+          logger.error("Record creation failed:", error);
         }
       },
       () => {

@@ -47,6 +47,7 @@ describe("chainProviders", () => {
 
     expect(result).toBe("result2");
     expect(consoleSpy).toHaveBeenCalledWith(
+      "[Twitch Clip Todo]",
       expect.stringContaining('Provider "provider1" failed'),
       expect.any(Error),
     );

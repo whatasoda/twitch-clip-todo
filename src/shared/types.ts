@@ -1,27 +1,15 @@
 // Message types for communication between components
 
-export interface CreateRecordPayload {
-  streamerId: string;
-  streamerName: string;
-  timestampSeconds: number;
-  sourceType: "live" | "vod";
-  vodId: string | null;
-  broadcastId: string | null;
-  memo?: string;
-}
+import type { z } from "zod";
+import type {
+  createRecordPayloadSchema,
+  linkVodPayloadSchema,
+  onboardingStateSchema,
+} from "./message-schemas";
 
-export interface LinkVodPayload {
-  vodId: string;
-  streamerId: string;
-  streamId: string; // Required for precise matching
-  startedAt: string; // ISO 8601
-  durationSeconds: number;
-}
-
-export interface OnboardingState {
-  hasSeenTwitchToast: boolean;
-  hasSeenFirstRecordHint: boolean;
-}
+export type CreateRecordPayload = z.infer<typeof createRecordPayloadSchema>;
+export type LinkVodPayload = z.infer<typeof linkVodPayloadSchema>;
+export type OnboardingState = z.infer<typeof onboardingStateSchema>;
 
 export interface CleanupNotification {
   count: number;

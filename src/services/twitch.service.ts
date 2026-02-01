@@ -14,6 +14,7 @@ import {
   type VideosEndpoint,
 } from "../infrastructure/twitch-api/endpoints";
 import { CACHE_TTL, STORAGE_KEYS } from "../shared/constants";
+import { logger } from "../shared/logger";
 import type { CacheEntry } from "./cache.service";
 import {
   type LiveStreamInfo,
@@ -141,8 +142,8 @@ export function createTwitchService(deps: TwitchServiceDeps): TwitchService {
         });
 
         return streamerInfo;
-      } catch {
-        // API error - return null to trigger fallback
+      } catch (error) {
+        logger.warn("getStreamerInfo failed:", error);
         return null;
       }
     },
@@ -152,7 +153,8 @@ export function createTwitchService(deps: TwitchServiceDeps): TwitchService {
         const video = await videosEndpoint.getById(vodId);
         if (!video) return null;
         return mapVideoToVodMetadata(video);
-      } catch {
+      } catch (error) {
+        logger.warn("getVodMetadata failed:", error);
         return null;
       }
     },
@@ -162,7 +164,8 @@ export function createTwitchService(deps: TwitchServiceDeps): TwitchService {
         const stream = await streamsEndpoint.getByUserLogin(login.toLowerCase());
         if (!stream) return null;
         return mapStreamToLiveStreamInfo(stream);
-      } catch {
+      } catch (error) {
+        logger.warn("getCurrentStream failed:", error);
         return null;
       }
     },
@@ -241,7 +244,8 @@ export function createTwitchService(deps: TwitchServiceDeps): TwitchService {
         await updatePersistentVodCache(userId, entry);
 
         return vods;
-      } catch {
+      } catch (error) {
+        logger.warn("getRecentVodsByUserId failed:", error);
         return [];
       }
     },

@@ -7,6 +7,7 @@ import {
   createTwitchService,
   createVodDiscoveryService,
 } from "../services";
+import { logger } from "../shared/logger";
 import type { MessageToBackground } from "../shared/types";
 import { handleMessage } from "./message-handler";
 
@@ -35,9 +36,7 @@ const twitchService = createTwitchService({
 });
 
 if (!twitchService) {
-  console.warn(
-    "[Twitch Clip Todo] Twitch API not configured. Set TWITCH_CLIENT_ID to enable API features.",
-  );
+  logger.warn("Twitch API not configured. Set TWITCH_CLIENT_ID to enable API features.");
 }
 
 // Initialize VOD discovery service
@@ -97,4 +96,4 @@ chrome.commands.onCommand.addListener((command, tab) => {
   }
 });
 
-console.log("[Twitch Clip Todo] Service Worker initialized");
+logger.info("Service Worker initialized");
