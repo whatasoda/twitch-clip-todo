@@ -3,7 +3,7 @@ import { MSG } from "@/shared/i18n/message-keys";
 import { logger } from "@/shared/logger";
 import type { PageInfo } from "../core/twitch";
 import type { CreateRecordPayload } from "../shared/types";
-import { checkAuthStatus, createRecord } from "./messaging";
+import { checkAuthStatus, createRecord, getVodMetadataFromApi } from "./messaging";
 import {
   getBroadcastId,
   getLiveTimestamp,
@@ -104,9 +104,20 @@ export function createRecordHandler(deps: RecordHandlerDeps) {
       timestamp = timestampResult?.seconds ?? null;
       broadcastId = broadcastIdResult;
     } else {
-      // VOD: Get timestamp from DOM
-      const timestampResult = await getVodTimestamp();
+      // VOD: Get timestamp from DOM and metadata from API in parallel
+      const [timestampResult, vodMetadata] = await Promise.all([
+        getVodTimestamp(),
+        pageInfo.vodId ? getVodMetadataFromApi(pageInfo.vodId) : Promise.resolve(null),
+      ]);
       timestamp = timestampResult?.seconds ?? null;
+
+      if (vodMetadata) {
+        cachedStreamerResult = {
+          displayName: vodMetadata.streamerName,
+          login: vodMetadata.streamerId,
+        };
+        broadcastId = vodMetadata.streamId;
+      }
     }
 
     if (timestamp === null) {
