@@ -34,23 +34,40 @@ function createChatButton(onClick: () => void): HTMLElement {
 }
 
 /**
+ * Get the last child div of a container element, used for right-side button placement.
+ */
+function getLastChildDiv(container: Element): HTMLElement | null {
+  const childDivs = container.querySelectorAll(":scope > div");
+  const lastDiv = childDivs[childDivs.length - 1];
+  return (lastDiv as HTMLElement) ?? null;
+}
+
+/**
  * Find the chat input buttons container closest to the send button.
  * Insert at the beginning of the right-side div (後ろの方の先頭).
  */
 function findChatInputButtonsContainer(): HTMLElement | null {
-  // Find all .chat-input__buttons-container elements
+  // Primary: class-based selector
   const containers = document.querySelectorAll(".chat-input__buttons-container");
-  // Get the last one (closest to send button)
   const container = containers[containers.length - 1];
-  if (!container) return null;
+  if (container) {
+    const target = getLastChildDiv(container);
+    if (target) return target;
+  }
 
-  // Find child divs - we want the last div (right side)
-  const childDivs = container.querySelectorAll(":scope > div");
-  const lastDiv = childDivs[childDivs.length - 1];
-  if (!lastDiv) return null;
+  // Fallback: data-a-target based selector
+  const chatInput = document.querySelector('[data-a-target="chat-input"]');
+  if (chatInput) {
+    const buttonsArea = chatInput
+      .closest("[class*=chat-input]")
+      ?.querySelector('[class*="buttons-container"]');
+    if (buttonsArea) {
+      const target = getLastChildDiv(buttonsArea);
+      if (target) return target;
+    }
+  }
 
-  // Return the last div (後ろの方)
-  return lastDiv as HTMLElement;
+  return null;
 }
 
 /**
